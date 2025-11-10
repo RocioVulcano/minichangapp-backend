@@ -165,7 +165,7 @@ stages:
               deploymentMethod: 'auto'
           - script: |
               echo "Verificando estado del servidor QA..."
-              curl -f https://$(webAppQA).azurewebsites.net/health
+              curl -f changapp-plan-canadacentral-qa-e6b8d0e8c9egfgct.canadacentral-01.azurewebsites.net/health
             displayName: 'Health check QA'
 
 
