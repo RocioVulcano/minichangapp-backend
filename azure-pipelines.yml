@@ -163,6 +163,11 @@ stages:
               appName: '$(webAppQA)'
               package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
               deploymentMethod: 'auto'
+          - script: |
+              echo "Verificando estado del servidor QA..."
+              curl -f https://$(webAppQA).azurewebsites.net/health
+            displayName: 'Health check QA'
+
 
           # health check
           - script: |
