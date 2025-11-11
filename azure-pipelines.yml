@@ -161,7 +161,7 @@ stages:
               azureSubscription: '$(azureSubscription)'
               appType: 'webApp'
               appName: '$(webAppQA)'
-              package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
+              package: '$(Pipeline.Workspace)/drop/**/MiniChangApp.zip'
               deploymentMethod: 'auto'
           - script: |
               echo "Verificando estado del servidor QA..."
