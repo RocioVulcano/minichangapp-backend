@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Usuario - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>🧍‍♀️ Crear usuario</h2>
+    <form id="formUsuario">
+      <input type="text" name="nombre" placeholder="👤 Nombre completo" required />
+      <input type="email" name="email" placeholder="📧 Email" required />
+      <select name="rol" required style="width: 100%; padding: 15px 20px; font-size: 16px; border: 2px solid #e0e0e0; border-radius: 10px; transition: all 0.3s ease; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: white; cursor: pointer;">
+        <option value="">Selecciona un rol</option>
+        <option value="empleador">👔 Empleador</option>
+        <option value="empleado">🧑‍💼 Empleado</option>
+      </select>
+      <button type="submit">✨ Crear usuario</button>
+    </form>
+    <p id="mensaje"></p>
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="/usuarios.html" class="back-link">⬅️ Volver a lista</a>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    async function loadComponent(id, file) {
+      try {
+        const res = await fetch(file);
+        const html = await res.text();
+        document.getElementById(id).innerHTML = html;
+      } catch (error) {
+        console.error(`Error cargando componente ${file}:`, error);
+      }
+    }
+    
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    const form = document.getElementById("formUsuario");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      const button = form.querySelector('button');
+      const originalText = button.textContent;
+      
+      button.disabled = true;
+      button.innerHTML = '<div class="loading" style="margin: 0 auto;"></div>';
+      mensaje.textContent = "";
+
+      try {
+        const res = await fetch("http://localhost:3000/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        button.disabled = false;
+        button.textContent = originalText;
+
+        if (json.error) {
+          mensaje.textContent = "❌ Error: " + json.error;
+          mensaje.style.color = "red";
+          mensaje.style.background = "#ffe0e0";
+        } else {
+          mensaje.textContent = "✅ Usuario creado correctamente!";
+          mensaje.style.color = "green";
+          mensaje.style.background = "#e0ffe0";
+          form.reset();
+          
+          setTimeout(() => {
+            mensaje.textContent = "";
+            mensaje.style.background = "";
+          }, 3000);
+        }
+      } catch (err) {
+        button.disabled = false;
+        button.textContent = originalText;
+        mensaje.textContent = "❌ Error al conectar con el servidor. Verifica que esté ejecutándose.";
+        mensaje.style.color = "red";
+        mensaje.style.background = "#ffe0e0";
+      }
+    });
+  </script>
+</body>
+</html>

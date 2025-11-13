@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trabajos - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>💼 Lista de trabajos</h2>
+    <div id="loading" style="text-align: center; padding: 40px;">
+      <div class="loading"></div>
+      <p style="margin-top: 15px; color: #666;">Cargando trabajos...</p>
+    </div>
+    <ul id="lista" style="display: none;"></ul>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    // Carga de navbar y footer
+    async function loadComponent(id, file) {
+      const res = await fetch(file);
+      const html = await res.text();
+      document.getElementById(id).innerHTML = html;
+    }
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    // Cargar trabajos
+    async function cargarTrabajos() {
+      try {
+        const res = await fetch("http://localhost:3000/trabajos");
+        const trabajos = await res.json();
+        const lista = document.getElementById("lista");
+        const loading = document.getElementById("loading");
+
+        if (!Array.isArray(trabajos) || trabajos.length === 0) {
+          loading.innerHTML = '<p style="color: #999; text-align: center;">No hay trabajos disponibles aún 😔</p>';
+          return;
+        }
+
+        loading.style.display = 'none';
+        lista.style.display = 'grid';
+
+        lista.innerHTML = trabajos.map(t => `
+          <li>
+            <b>${t.titulo}</b>
+            <div style="margin-top: 10px; color: #666; font-size: 14px;">
+              ${t.descripcion || 'Sin descripción'}
+            </div>
+            <div style="margin-top: 10px; color: #888; font-size: 14px;">
+              📍 ${t.ubicacion}
+            </div>
+            <div style="margin-top: 10px; color: #999; font-size: 13px;">
+              👤 Empleador: <strong>${t.empleador?.nombre || 'Desconocido'}</strong>
+            </div>
+            <div style="margin-top: 10px;">
+              <button onclick="editarTrabajo(${t.id_trabajo}, '${t.titulo}', '${t.descripcion || ''}', '${t.ubicacion || ''}', '${t.empleador?.id_usuario || ''}')">✏️ Editar</button>
+              <button onclick="eliminarTrabajo(${t.id_trabajo})" style="background:#ff4d4f;">🗑 Eliminar</button>
+            </div>
+          </li>
+        `).join("");
+      } catch (error) {
+        document.getElementById("loading").innerHTML =
+          '<p style="color: red; text-align: center;">❌ Error al cargar trabajos. Verifica que el servidor esté ejecutándose.</p>';
+      }
+    }
+
+    // Editar trabajo
+    function editarTrabajo(id, titulo, descripcion, ubicacion, empleador_id) {
+      const nuevoTitulo = prompt("Nuevo título:", titulo);
+      const nuevaDescripcion = prompt("Nueva descripción:", descripcion);
+      const nuevaUbicacion = prompt("Nueva ubicación:", ubicacion);
+      const nuevoEmpleador = prompt("Nuevo ID de empleador:", empleador_id);
+      if (!nuevoTitulo || !nuevaDescripcion || !nuevaUbicacion || !nuevoEmpleador) return alert("⚠️ Campos incompletos.");
+
+      fetch(`http://localhost:3000/trabajos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titulo: nuevoTitulo,
+          descripcion: nuevaDescripcion,
+          ubicacion: nuevaUbicacion,
+          empleador_id: nuevoEmpleador
+        })
+      })
+      .then(() => {
+        alert("✅ Trabajo actualizado correctamente.");
+        location.reload();
+      });
+    }
+
+    // Eliminar trabajo
+    async function eliminarTrabajo(id) {
+      if (!confirm("¿Eliminar este trabajo?")) return;
+      await fetch(`http://localhost:3000/trabajos/${id}`, { method: "DELETE" });
+      alert("✅ Trabajo eliminado correctamente.");
+      location.reload();
+    }
+
+    cargarTrabajos();
+  </script>
+</body>
+</html>

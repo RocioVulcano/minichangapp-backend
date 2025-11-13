@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postulaciones - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>📄 Postulaciones</h2>
+    <div style="text-align: center; margin-bottom: 20px;">
+      <a href="/crear_postulacion.html" class="back-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+        ➕ Nueva postulación
+      </a>
+    </div>
+
+    <div id="loading" style="text-align: center; padding: 40px;">
+      <div class="loading"></div>
+      <p style="margin-top: 15px; color: #666;">Cargando postulaciones...</p>
+    </div>
+
+    <ul id="lista" style="display: none;"></ul>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    // 🧱 Carga de navbar y footer
+    async function loadComponent(id, file) {
+      const res = await fetch(file);
+      const html = await res.text();
+      document.getElementById(id).innerHTML = html;
+    }
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    // 🧾 Cargar postulaciones
+    async function cargarPostulaciones() {
+      try {
+        const res = await fetch("http://localhost:3000/postulaciones");
+        const data = await res.json();
+        const lista = document.getElementById("lista");
+        const loading = document.getElementById("loading");
+
+        if (!Array.isArray(data) || data.length === 0) {
+          loading.innerHTML = '<p style="color: #999; text-align: center;">No hay postulaciones aún 😔</p>';
+          return;
+        }
+
+        loading.style.display = 'none';
+        lista.style.display = 'grid';
+        lista.innerHTML = data.map(p => `
+          <li>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <span style="font-size: 16px;">👤 <b style="color: #667eea;">${p.usuario?.nombre || 'Usuario desconocido'}</b></span>
+                <span style="margin: 0 10px; color: #ccc;">→</span>
+                <span style="font-size: 16px;">💼 <b style="color: #764ba2;">${p.trabajo?.titulo || 'Trabajo desconocido'}</b></span>
+              </div>
+              ${p.oferta_pago ? `
+                <div style="background: #4caf50; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                  💰 $${p.oferta_pago}
+                </div>
+              ` : ''}
+            </div>
+
+            ${p.mensaje ? `
+              <div style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 8px; color: #666; font-size: 14px;">
+                💬 "${p.mensaje}"
+              </div>
+            ` : ''}
+
+            <div style="margin-top: 15px;">
+              <button onclick="editarPostulacion(${p.id_postulacion}, '${p.trabajo?.titulo}', '${p.usuario?.nombre}', '${p.mensaje || ''}', '${p.oferta_pago || ''}')">✏️ Editar</button>
+              <button onclick="eliminarPostulacion(${p.id_postulacion})" style="background:#ff4d4f;">🗑 Eliminar</button>
+            </div>
+          </li>
+        `).join("");
+
+      } catch (error) {
+        document.getElementById("loading").innerHTML =
+          '<p style="color: red; text-align: center;">❌ Error al cargar postulaciones. Verifica que el servidor esté ejecutándose.</p>';
+      }
+    }
+
+    // ✏️ Editar postulación
+    async function editarPostulacion(id_postulacion, tituloTrabajo, nombreUsuario, mensaje, oferta_pago) {
+      const nuevoMensaje = prompt(`Mensaje actual: "${mensaje || ''}"\nEscribe el nuevo mensaje:`, mensaje);
+      const nuevaOferta = prompt(`Oferta actual: ${oferta_pago || 0}\nNueva oferta:`, oferta_pago);
+
+      if (nuevoMensaje === null && nuevaOferta === null) return;
+
+      const res = await fetch(`http://localhost:3000/postulaciones/${id_postulacion}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mensaje: nuevoMensaje,
+          oferta_pago: nuevaOferta
+        })
+      });
+
+      if (res.ok) {
+        alert("✅ Postulación actualizada correctamente.");
+        location.reload();
+      } else {
+        const err = await res.json();
+        alert("❌ Error: " + err.error);
+      }
+    }
+
+    // 🗑 Eliminar postulación
+    async function eliminarPostulacion(id_postulacion) {
+      if (!confirm("¿Eliminar esta postulación?")) return;
+      await fetch(`http://localhost:3000/postulaciones/${id_postulacion}`, { method: "DELETE" });
+      alert("✅ Postulación eliminada correctamente.");
+      location.reload();
+    }
+
+    cargarPostulaciones();
+  </script>
+</body>
+</html>

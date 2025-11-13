@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>👥 Lista de usuarios</h2>
+    <div id="loading" style="text-align: center; padding: 40px;">
+      <div class="loading"></div>
+      <p style="margin-top: 15px; color: #666;">Cargando usuarios...</p>
+    </div>
+    <ul id="usuarios" style="display: none;"></ul>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    // 🧱 Carga de navbar y footer
+    async function loadComponent(id, file) {
+      const res = await fetch(file);
+      const html = await res.text();
+      document.getElementById(id).innerHTML = html;
+    }
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    // 🧾 Cargar usuarios
+    async function cargarUsuarios() {
+      try {
+        const res = await fetch("http://localhost:3000/usuarios");
+        const usuarios = await res.json();
+        const ul = document.getElementById("usuarios");
+        const loading = document.getElementById("loading");
+
+        if (usuarios.length === 0) {
+          loading.innerHTML = '<p style="color: #999; text-align: center;">No hay usuarios registrados aún 😔</p>';
+          return;
+        }
+
+        loading.style.display = 'none';
+        ul.style.display = 'grid';
+
+        ul.innerHTML = usuarios.map(u => `
+          <li>
+            <b>${u.nombre}</b>
+            <div style="margin-top: 8px; color: #666;">
+              <span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase;">
+                ${u.rol}
+              </span>
+            </div>
+            <div style="margin-top: 8px; color: #888; font-size: 14px;">
+              📧 ${u.email}
+            </div>
+            <div style="margin-top: 10px;">
+              <button onclick="editarUsuario(${u.id}, '${u.nombre}', '${u.email}', '${u.rol}')">✏️ Editar</button>
+              <button onclick="eliminarUsuario(${u.id})" style="background:#ff4d4f;">🗑 Eliminar</button>
+            </div>
+          </li>
+        `).join("");
+      } catch (error) {
+        document.getElementById("loading").innerHTML = 
+          '<p style="color: red; text-align: center;">❌ Error al cargar usuarios. Verifica que el servidor esté ejecutándose.</p>';
+      }
+    }
+
+    // 🧮 Editar usuario
+    function editarUsuario(id, nombre, email, rol) {
+      const nuevoNombre = prompt("Nuevo nombre:", nombre);
+      const nuevoEmail = prompt("Nuevo email:", email);
+      const nuevoRol = prompt("Nuevo rol (empleador/empleado):", rol);
+      if (!nuevoNombre || !nuevoEmail || !nuevoRol) return alert("⚠️ Campos incompletos.");
+
+      fetch(`http://localhost:3000/usuarios/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: nuevoNombre, email: nuevoEmail, rol: nuevoRol })
+      })
+      .then(() => {
+        alert("✅ Usuario actualizado correctamente.");
+        location.reload();
+      });
+    }
+
+    // 🗑 Eliminar usuario
+    async function eliminarUsuario(id) {
+      if (!confirm("¿Eliminar este usuario?")) return;
+      await fetch(`http://localhost:3000/usuarios/${id}`, { method: "DELETE" });
+      alert("✅ Usuario eliminado correctamente.");
+      location.reload();
+    }
+
+    cargarUsuarios();
+  </script>
+</body>
+</html>

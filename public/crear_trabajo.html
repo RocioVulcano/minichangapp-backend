@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Trabajo - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>🧱 Crear trabajo</h2>
+    <form id="formTrabajo">
+      <input type="text" name="titulo" placeholder="📋 Título del trabajo" required />
+      <textarea name="descripcion" placeholder="📝 Descripción del trabajo" required></textarea>
+      <input type="text" name="ubicacion" placeholder="📍 Ubicación" required />
+      <input type="number" name="empleador_id" placeholder="👤 ID del empleador" required min="1" />
+      <button type="submit">✨ Crear trabajo</button>
+    </form>
+    <p id="mensaje"></p>
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="/trabajos.html" class="back-link">⬅️ Volver a lista</a>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    async function loadComponent(id, file) {
+      try {
+        const res = await fetch(file);
+        const html = await res.text();
+        document.getElementById(id).innerHTML = html;
+      } catch (error) {
+        console.error(`Error cargando componente ${file}:`, error);
+      }
+    }
+    
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    const form = document.getElementById("formTrabajo");
+    const mensaje = document.getElementById("mensaje");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      const button = form.querySelector('button');
+      const originalText = button.textContent;
+      
+      button.disabled = true;
+      button.innerHTML = '<div class="loading" style="margin: 0 auto;"></div>';
+      mensaje.textContent = "";
+
+      try {
+        const res = await fetch("http://localhost:3000/trabajos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        button.disabled = false;
+        button.textContent = originalText;
+
+        if (json.error) {
+          mensaje.textContent = "❌ Error: " + json.error;
+          mensaje.style.color = "red";
+          mensaje.style.background = "#ffe0e0";
+        } else {
+          mensaje.textContent = "✅ Trabajo creado correctamente!";
+          mensaje.style.color = "green";
+          mensaje.style.background = "#e0ffe0";
+          form.reset();
+          
+          setTimeout(() => {
+            mensaje.textContent = "";
+            mensaje.style.background = "";
+          }, 3000);
+        }
+      } catch (err) {
+        button.disabled = false;
+        button.textContent = originalText;
+        mensaje.textContent = "❌ Error al conectar con el servidor. Verifica que esté ejecutándose.";
+        mensaje.style.color = "red";
+        mensaje.style.background = "#ffe0e0";
+      }
+    });
+  </script>
+</body>
+</html>

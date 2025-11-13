@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear postulación - MiniChangApp</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <main>
+    <h2>📩 Crear postulación</h2>
+
+    <form id="formPostulacion">
+      <label>
+        <span>💼 Trabajo</span>
+        <select id="trabajo_id" required>
+          <option value="">Seleccionar trabajo...</option>
+        </select>
+      </label>
+
+      <label>
+        <span>👤 Usuario</span>
+        <select id="usuario_id" required>
+          <option value="">Seleccionar usuario...</option>
+        </select>
+      </label>
+
+      <label>
+        <span>💬 Mensaje (opcional)</span>
+        <textarea id="mensaje" placeholder="Ejemplo: Tengo experiencia en eventos..."></textarea>
+      </label>
+
+      <label>
+        <span>💰 Oferta de pago (opcional)</span>
+        <input type="number" id="oferta_pago" placeholder="Ejemplo: 25000" />
+      </label>
+
+      <button type="submit">✨ Crear postulación</button>
+    </form>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    // Carga de navbar y footer
+    async function loadComponent(id, file) {
+      const res = await fetch(file);
+      const html = await res.text();
+      document.getElementById(id).innerHTML = html;
+    }
+    loadComponent("navbar", "/components/navbar.html");
+    loadComponent("footer", "/components/footer.html");
+
+    // Cargar listas en los select
+    async function cargarSelects() {
+      const trabajoSelect = document.getElementById("trabajo_id");
+      const usuarioSelect = document.getElementById("usuario_id");
+
+      try {
+        const [trabajosRes, usuariosRes] = await Promise.all([
+          fetch("http://localhost:3000/trabajos/select"),
+          fetch("http://localhost:3000/usuarios/select")
+        ]);
+
+        const trabajos = await trabajosRes.json();
+        const usuarios = await usuariosRes.json();
+
+        trabajos.forEach(t => {
+          const opt = document.createElement("option");
+          opt.value = t.id_trabajo;
+          opt.textContent = t.titulo;
+          trabajoSelect.appendChild(opt);
+        });
+
+        usuarios.forEach(u => {
+          const opt = document.createElement("option");
+          opt.value = u.id_usuario;
+          opt.textContent = u.nombre;
+          usuarioSelect.appendChild(opt);
+        });
+      } catch (err) {
+        alert("❌ Error al cargar listas: " + err.message);
+      }
+    }
+
+    // Enviar postulación
+    document.getElementById("formPostulacion").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const trabajo_id = document.getElementById("trabajo_id").value;
+      const usuario_id = document.getElementById("usuario_id").value;
+      const mensaje = document.getElementById("mensaje").value;
+      const oferta_pago = document.getElementById("oferta_pago").value;
+
+      if (!trabajo_id || !usuario_id) {
+        return alert("⚠️ Debes seleccionar un trabajo y un usuario.");
+      }
+
+      const res = await fetch("http://localhost:3000/postulaciones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trabajo_id, usuario_id, mensaje, oferta_pago })
+      });
+
+      if (res.ok) {
+        alert("✅ Postulación creada correctamente.");
+        document.getElementById("formPostulacion").reset();
+      } else {
+        const err = await res.json();
+        alert("❌ Error: " + err.error);
+      }
+    });
+
+    cargarSelects();
+  </script>
+</body>
+</html>
