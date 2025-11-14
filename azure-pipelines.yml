@@ -93,8 +93,11 @@ stages:
     # tests y generar coverage (definido en pckg.json)
     - script: |
         echo "Ejecutando tests automáticos con cobertura..."
+        export SUPABASE_URL=$(SUPABASE_URL)
+        export SUPABASE_KEY=$(SUPABASE_KEY)
         npm run test:coverage
       displayName: 'Correr tests con Jest (coverage)'
+
       continueOnError: false
 
     # publica los resultados de cobertura en Azure DevOps para visualización. 
@@ -115,9 +118,12 @@ stages:
         publishLocation: 'Container'
 
     - script: |
-        echo "Ejecutando pruebas de integración..."
+        echo "Ejecutando pruebas de integración con Supabase..."
+        export SUPABASE_URL=$(SUPABASE_URL)
+        export SUPABASE_KEY=$(SUPABASE_KEY)
         npm run test:integration
       displayName: 'Correr pruebas de integración (Jest)'
+
 
     - task: PublishTestResults@2
       inputs:
