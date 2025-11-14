@@ -27,6 +27,8 @@
 
   <div id="footer"></div>
 
+  <script src="config.js"></script>
+
   <script>
     // 🧱 Carga de navbar y footer
     async function loadComponent(id, file) {
@@ -40,7 +42,7 @@
     // 🧾 Cargar postulaciones
     async function cargarPostulaciones() {
       try {
-        const res = await fetch("http://localhost:3000/postulaciones");
+        const res = await fetch(`${API_URL}/postulaciones`);
         const data = await res.json();
         const lista = document.getElementById("lista");
         const loading = document.getElementById("loading");
@@ -93,7 +95,7 @@
 
       if (nuevoMensaje === null && nuevaOferta === null) return;
 
-      const res = await fetch(`http://localhost:3000/postulaciones/${id_postulacion}`, {
+      const res = await fetch(`${API_URL}/postulaciones/${id_postulacion}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -114,7 +116,7 @@
     // 🗑 Eliminar postulación
     async function eliminarPostulacion(id_postulacion) {
       if (!confirm("¿Eliminar esta postulación?")) return;
-      await fetch(`http://localhost:3000/postulaciones/${id_postulacion}`, { method: "DELETE" });
+      await fetch(`${API_URL}/postulaciones/${id_postulacion}`, { method: "DELETE" });
       alert("✅ Postulación eliminada correctamente.");
       location.reload();
     }

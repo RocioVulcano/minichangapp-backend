@@ -20,6 +20,8 @@
 
   <div id="footer"></div>
 
+  <script src="config.js"></script>
+
   <script>
     // Carga de navbar y footer
     async function loadComponent(id, file) {
@@ -33,7 +35,7 @@
     // Cargar trabajos
     async function cargarTrabajos() {
       try {
-        const res = await fetch("http://localhost:3000/trabajos");
+        const res = await fetch(`${API_URL}/trabajos`);
         const trabajos = await res.json();
         const lista = document.getElementById("lista");
         const loading = document.getElementById("loading");
@@ -78,7 +80,7 @@
       const nuevoEmpleador = prompt("Nuevo ID de empleador:", empleador_id);
       if (!nuevoTitulo || !nuevaDescripcion || !nuevaUbicacion || !nuevoEmpleador) return alert("⚠️ Campos incompletos.");
 
-      fetch(`http://localhost:3000/trabajos/${id}`, {
+      fetch(`${API_URL}/trabajos/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,7 +99,7 @@
     // Eliminar trabajo
     async function eliminarTrabajo(id) {
       if (!confirm("¿Eliminar este trabajo?")) return;
-      await fetch(`http://localhost:3000/trabajos/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/trabajos/${id}`, { method: "DELETE" });
       alert("✅ Trabajo eliminado correctamente.");
       location.reload();
     }

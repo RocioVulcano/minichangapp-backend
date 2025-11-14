@@ -20,6 +20,8 @@
 
   <div id="footer"></div>
 
+  <script src="config.js"></script>
+  
   <script>
     // 🧱 Carga de navbar y footer
     async function loadComponent(id, file) {
@@ -33,7 +35,7 @@
     // 🧾 Cargar usuarios
     async function cargarUsuarios() {
       try {
-        const res = await fetch("http://localhost:3000/usuarios");
+        const res = await fetch(`${API_URL}/usuarios`);
         const usuarios = await res.json();
         const ul = document.getElementById("usuarios");
         const loading = document.getElementById("loading");
@@ -76,7 +78,7 @@
       const nuevoRol = prompt("Nuevo rol (empleador/empleado):", rol);
       if (!nuevoNombre || !nuevoEmail || !nuevoRol) return alert("⚠️ Campos incompletos.");
 
-      fetch(`http://localhost:3000/usuarios/${id}`, {
+      fetch(`${API_URL}/usuarios/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre: nuevoNombre, email: nuevoEmail, rol: nuevoRol })
@@ -90,7 +92,7 @@
     // 🗑 Eliminar usuario
     async function eliminarUsuario(id) {
       if (!confirm("¿Eliminar este usuario?")) return;
-      await fetch(`http://localhost:3000/usuarios/${id}`, { method: "DELETE" });
+      await fetch(`${API_URL}/usuarios/${id}`, { method: "DELETE" });
       alert("✅ Usuario eliminado correctamente.");
       location.reload();
     }

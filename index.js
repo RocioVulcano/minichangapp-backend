@@ -9,10 +9,20 @@ app.use(express.static("public"));
 
 // ====================
 // CONEXION CON DB: Supabase
+<<<<<<< HEAD
 // ====================
 const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg";
+=======
+// ===================
+//const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
+//const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg";
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
+>>>>>>> 9ff2d1c (agregamos docs TPs 6, 7 Y 8)
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
