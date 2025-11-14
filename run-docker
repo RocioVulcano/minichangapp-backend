@@ -1,7 +1,15 @@
+//build imagen
 docker build -t minichangapp-backend .
 
+//run imagen
 docker run -p 3000:3000 minichangapp-backend
+docker run -p 3000:3000 ^
+  -e SUPABASE_URL="https://xditqomizrdelarcwtus.supabase.co" ^
+  -e SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg" ^
+  minichangapp-backend
 
+
+//
 docker pull rociovulcano/minichangapp:latest
 docker run -p 3000:3000 rociovulcano/minichangapp
 
