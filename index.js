@@ -9,7 +9,7 @@ app.use(express.static("public"));
 
 // ====================
 // CONEXION CON DB: Supabase
-// ===================
+// ====================
 const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg";
