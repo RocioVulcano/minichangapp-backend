@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-// ===================
+// ====================
 // CONEXION CON DB: Supabase
 // ===================
 const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
