@@ -1,0 +1,8 @@
+docker build -t minichangapp-backend .
+
+docker run -p 3000:3000 minichangapp-backend
+
+docker pull rociovulcano/minichangapp:latest
+docker run -p 3000:3000 rociovulcano/minichangapp
+
+docker run -p 8080:80 front-image
