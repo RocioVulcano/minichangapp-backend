@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../index.js';
+import app from "../app.js";
 
 describe('🔗 Pruebas de integración - Usuarios', () => {
   let usuarioCreado;
