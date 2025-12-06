@@ -1,22 +1,16 @@
-// app.js — toda la app SIN arrancar servidor
 import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import pkg from "pg";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 
 // ============================================================
-// FIX: CARGA DE VARIABLES DE ENTORNO
+// CARGA DE VARIABLES DE ENTORNO (SIN import.meta.url)
 // ============================================================
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 if (process.env.NODE_ENV === "test") {
-  const envPath = path.join(__dirname, ".env.test");
-  console.log("🔧 Cargando .env.test desde:", envPath);
-  dotenv.config({ path: envPath });
+  console.log("🔧 Cargando variables desde .env.test");
+  dotenv.config({ path: ".env.test" });
 } else {
   dotenv.config();
 }
