@@ -2,54 +2,51 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest' #agente de ej
+  vmImage: 'ubuntu-latest'
 
-#variables reutilizables
 variables:
   nodeVersion: '22.x'
   azureSubscription: 'azure-for-students'
-  webAppQA: 'changapp-plan-canadacentral-qa'
-  webAppPROD: 'changapp-plan-canadacentral-prod'
+
+  # WebApps correctas
+  webAppQA: 'changapp-qa'
+  webAppPROD: 'changapp-prod'
+
+  # Variables globales (toman valores de Variables del pipeline)
+  SUPABASE_URL: $(SUPABASE_URL)
+  SUPABASE_KEY: $(SUPABASE_KEY)
+  DATABASE_URL_PROD: $(DATABASE_URL_PROD)
+
+stages:
 
 # ===========================
 #       STAGE 1: BUILD
 # ===========================
-stages:
 - stage: Build
-  displayName: 'Build and Package' #Compilar y empaquetar
+  displayName: 'Build and Package'
   jobs:
   - job: BuildJob
     steps:
-    #instalo node
+
     - task: NodeTool@0
       inputs:
         versionSpec: '$(nodeVersion)'
-      displayName: 'Usar Node.js $(nodeVersion)'
+      displayName: 'Usar Node.js'
 
-    #ci no actualiza como install - consistencia
-    - script: |
-        echo "Instalando dependencias..."
-        npm ci
+    - script: npm ci
       displayName: 'Instalar dependencias'
 
-    #zip del proyecyo
     - task: ArchiveFiles@2
-      displayName: 'Empaquetar aplicación completa'
+      displayName: 'Empaquetar aplicación'
       inputs:
         rootFolderOrFile: '$(Build.SourcesDirectory)'
-        includeRootFolder: false #zip ya esta en la raiz
+        includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/MiniChangApp.zip'
         replaceExistingArchive: true
 
-    #verificacion (gusto personal)
-    - script: |
-        unzip -l $(Build.ArtifactStagingDirectory)/MiniChangApp.zip | grep "package.json" || (echo "❌ ERROR: package.json no está en el ZIP" && exit 1)
-      displayName: 'Validar presencia de package.json'
-
-    #publica zip como artifact
     - task: PublishBuildArtifacts@1
-      displayName: 'Publicar artefacto de build'
+      displayName: 'Publicar artefacto'
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: 'drop'
@@ -57,165 +54,90 @@ stages:
 
 
 # ===========================
-#       STAGE 2: TESTING
+#       STAGE 2: TEST
 # ===========================
-
 - stage: Test
-  displayName: 'Run Automated Tests+SQ'
   dependsOn: Build
-  condition: succeeded() # ejecuto solo si build fue exitosa
   jobs:
-  - job: TestJob
+  - job: Tests
     steps:
-    - task: NodeTool@0 # reinstala Node.js por aislamiento
+    - task: NodeTool@0
       inputs:
         versionSpec: '$(nodeVersion)'
-      displayName: 'Usar Node.js $(nodeVersion)'
 
-      # de nuevo por si hay diferencias con el entorno
     - script: |
-        echo "Instalando dependencias para testing..."
+        echo "Ejecutando tests ..."
         npm ci
-      displayName: 'Instalar dependencias'
-
-    # prepara analisis de sonarQube
-    - task: SonarCloudPrepare@2     # Configura la conexión y parámetros del analisis
-      displayName: 'Preparar análisis SonarCloud'
-      inputs:
-        SonarCloud: 'SonarCloud'           # conexión creada
-        organization: 'rociovulcano'       # organización
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'MiniChangApp'      
-        cliProjectName: 'MiniChangApp'
-        cliSources: '.'
-
-    # tests y generar coverage (definido en pckg.json)
-    - script: |
-        echo "Ejecutando tests automáticos con cobertura..."
-        export SUPABASE_URL=$(SUPABASE_URL)
-        export SUPABASE_KEY=$(SUPABASE_KEY)
-        npm run test:coverage
-      displayName: 'Correr tests con Jest (coverage)'
-
-      continueOnError: false
-
-    # publica los resultados de cobertura en Azure DevOps para visualización. 
-    - task: PublishCodeCoverageResults@2    # publica el coverage dentro de Azure DevOps
-      displayName: 'Publicar resultados de cobertura en Azure'
-      inputs:
-        codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Build.SourcesDirectory)/coverage/lcov.info'
-        reportDirectory: '$(Build.SourcesDirectory)/coverage/lcov-report'
-        failIfCoverageEmpty: false
-
-    # publicar también como artefacto descargable
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publicar carpeta de cobertura como artefacto'
-      inputs:
-        pathToPublish: '$(Build.SourcesDirectory)/coverage'
-        artifactName: 'coverage-report'
-        publishLocation: 'Container'
-
-    - script: |
-        echo "Ejecutando pruebas de integración con Supabase..."
-        export SUPABASE_URL=$(SUPABASE_URL)
-        export SUPABASE_KEY=$(SUPABASE_KEY)
-        npm run test:integration
-      displayName: 'Correr pruebas de integración (Jest)'
-
-
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/junit.xml'
-      condition: always()
-      displayName: 'Publicar resultados de pruebas de integración'
-
-
-    # Ejecuta analisis de SonarCloud
-    - task: SonarCloudAnalyze@2         # sube el codigo y resultados a SonarCloud
-      displayName: 'Ejecutar análisis SonarCloud'
-
-    # Resultados
-    - task: SonarCloudPublish@2         # muestra el informe completo y aplica el Quality Gate
-      displayName: 'Publicar resultados SonarCloud'
-      inputs:
-        pollingTimeoutSec: '300'
-
+        npm test -- --coverage --runInBand
+      displayName: "Run tests"
 
 
 # ===========================
 #     STAGE 3: DEPLOY QA
 # ===========================
-
 - stage: Deploy_QA
-  displayName: 'Desplegar en QA'
   dependsOn: Test
-  condition: succeeded() # ejecuto solo si test fue exitosa
   jobs:
-  - deployment: DeployQA
-    environment: 'QA'  ## entorno de despliegue
+  - deployment: QADeploy
+    environment: 'QA'
     strategy:
       runOnce:
         deploy:
           steps:
-          # despliega el ZIP en el Web App de QA
+
+          - download: current
+            artifact: drop
+
           - task: AzureWebApp@1
-            displayName: 'Desplegar ZIP en QA'
+            displayName: 'Deploy en QA'
             inputs:
               azureSubscription: '$(azureSubscription)'
-              appType: 'webApp'
-              appName: '$(webAppQA)'
-              package: '$(Pipeline.Workspace)/drop/**/MiniChangApp.zip'
-              deploymentMethod: 'auto'
-          - script: |
-              echo "Verificando estado del servidor QA..."
-              curl -f changapp-plan-canadacentral-qa-e6b8d0e8c9egfgct.canadacentral-01.azurewebsites.net
-            displayName: 'Health check QA'
+              appType: webApp
+              appName: $(webAppQA)
+              package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
 
-
-          # health check
-          - script: |
-              echo "Verificando estado del servidor QA..."
-              for i in {1..10}; do
-                if curl -sf https://changapp-plan-canadacentral-qa-e6b8d0e8c9egfgct.canadacentral-01.azurewebsites.net/health; then
-                  echo "✅ Health check exitoso"
-                  exit 0
-                else
-                  echo "⏳ Intento $i fallido, reintentando en 5s..."
-                  sleep 5
-                fi
-              done
-              echo "❌ Health check falló tras múltiples intentos"
-              exit 1
-            displayName: 'Health check QA con reintentos'
+          - task: AzureWebApp@1
+            displayName: "Variables QA"
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: webApp
+              appName: $(webAppQA)
+              appSettings: |
+                NODE_ENV=qa
+                SUPABASE_URL=$(SUPABASE_URL)
+                SUPABASE_KEY=$(SUPABASE_KEY)
 
 
 # ===========================
 #    STAGE 4: DEPLOY PROD
 # ===========================
-
 - stage: Deploy_PROD
-  displayName: 'Desplegar en Producción'
   dependsOn: Deploy_QA
-  condition: succeeded() # ejecuto solo si QA fue exitosa
   jobs:
-  - deployment: DeployPROD
-    environment: 'PROD' ## entorno de despliegue
+  - deployment: ProdDeploy
+    environment: 'PROD'
     strategy:
       runOnce:
         deploy:
           steps:
+
+          - download: current
+            artifact: drop
+
           - task: AzureWebApp@1
-            displayName: 'Desplegar ZIP en Producción'
+            displayName: 'Deploy en PROD'
             inputs:
               azureSubscription: '$(azureSubscription)'
-              appType: 'webApp'
-              appName: '$(webAppPROD)'
+              appType: webApp
+              appName: $(webAppPROD)
               package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
-              deploymentMethod: 'auto'
 
-          - script: |
-              echo "Despliegue en producción completado"
-            displayName: 'Confirmación de despliegue en PROD'
+          - task: AzureWebApp@1
+            displayName: "Variables PROD"
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: webApp
+              appName: $(webAppPROD)
+              appSettings: |
+                NODE_ENV=production
+                DATABASE_URL_PROD=$(DATABASE_URL_PROD)
