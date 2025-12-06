@@ -1,207 +1,414 @@
 import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
+import pkg from "pg";
+
+const { Pool } = pkg;
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-// ====================
-// CONEXION CON DB: Supabase
-<<<<<<< HEAD
-// ====================
-const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg";
-=======
-// ===================
-//const SUPABASE_URL = "https://xditqomizrdelarcwtus.supabase.co";
-//const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaXRxb21penJkZWxhcmN3dHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMjg0MzcsImV4cCI6MjA3NjkwNDQzN30.GccmhKcdmh84ue1knO94NCAfhRi7gKpuKl_oO6XhrEg";
+// ============================================================
+// SELECCIÓN DINÁMICA DE BASE DE DATOS SEGÚN ENTORNO
+// ============================================================
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const isProd = process.env.NODE_ENV === "production";
 
->>>>>>> 9ff2d1c (agregamos docs TPs 6, 7 Y 8)
+let db = null;      // Neon (pg)
+let supabase = null; // Supabase (QA)
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+if (isProd) {
+  console.log("🟢 Conectando a NEON (PROD)...");
 
-// ===================================================
+  db = new Pool({
+    connectionString: process.env.DATABASE_URL_PROD,
+    ssl: { rejectUnauthorized: false },
+  });
+
+} else {
+  console.log("🟠 Conectando a SUPABASE (QA)...");
+
+  supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_KEY
+  );
+}
+
+// ============================================================
 // USUARIOS
-// ===================================================
+// ============================================================
+
+// GET usuarios
 app.get("/usuarios", async (req, res) => {
-  const { data, error } = await supabase.from("usuario").select("*");
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json(data);
+  try {
+    if (isProd) {
+      const result = await db.query("SELECT * FROM usuario ORDER BY id_usuario ASC;");
+      return res.json(result.rows);
+    }
+
+    const { data, error } = await supabase.from("usuario").select("*");
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "Error interno en /usuarios" });
+  }
 });
 
+// POST usuarios
 app.post("/usuarios", async (req, res) => {
   const { nombre, email, rol } = req.body;
 
-  // =====================================
-  // VALIDACIONES REQUERIDAS POR LOS TESTS
-  // =====================================
-
-  // 1) Campos obligatorios
+  // VALIDACIONES
   if (!nombre || !email || !rol) {
     return res.status(400).json({ error: "Todos los campos son obligatorios." });
   }
-
-  // 2) Nombre muy corto
   if (nombre.trim().length < 2) {
     return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres." });
   }
-
-  // 3) Nombre con números
   if (/\d/.test(nombre)) {
     return res.status(400).json({ error: "El nombre no puede contener números." });
   }
-
-  // 4) Email inválido
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: "El email no tiene un formato válido." });
   }
-
-  // 5) Nombre genérico prohibido
   const genericos = ["usuario", "empleado", "test", "admin", "candidato"];
   if (genericos.includes(nombre.trim().toLowerCase())) {
     return res.status(400).json({ error: "El nombre ingresado no es válido." });
   }
 
-  // =====================================
-  // CREAR USUARIO SI TODO ES VÁLIDO
-  // =====================================
-  const { data, error } = await supabase
-    .from("usuario")
-    .insert([{ nombre, email, rol }])
-    .select();
+  try {
+    if (isProd) {
+      const query = `
+        INSERT INTO usuario (nombre, email, rol, fecha_creacion)
+        VALUES ($1, $2, $3, NOW())
+        RETURNING *;
+      `;
+      const result = await db.query(query, [nombre, email, rol]);
+      return res.status(201).json(result.rows);
 
-  if (error) return res.status(400).json({ error: error.message });
+    } else {
+      const { data, error } = await supabase
+        .from("usuario")
+        .insert([{ nombre, email, rol }])
+        .select();
 
-  return res.status(201).json(data); // creado correctamente
+      if (error) return res.status(400).json({ error: error.message });
+      return res.status(201).json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al crear usuario" });
+  }
 });
 
+// PUT usuarios
 app.put("/usuarios/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre, email, rol } = req.body;
 
-  const { data, error } = await supabase
-    .from("usuario")
-    .update({ nombre, email, rol })
-    .eq("id_usuario", id)
-    .select();
+  try {
+    if (isProd) {
+      const query = `
+        UPDATE usuario 
+        SET nombre=$1, email=$2, rol=$3
+        WHERE id_usuario=$4
+        RETURNING *;
+      `;
+      const result = await db.query(query, [nombre, email, rol, id]);
+      return res.json(result.rows);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json(data);
+    } else {
+      const { data, error } = await supabase
+        .from("usuario")
+        .update({ nombre, email, rol })
+        .eq("id_usuario", id)
+        .select();
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al actualizar usuario" });
+  }
 });
 
+// DELETE usuarios
 app.delete("/usuarios/:id", async (req, res) => {
   const { id } = req.params;
-  const { error } = await supabase.from("usuario").delete().eq("id_usuario", id);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json({ message: "Usuario eliminado correctamente" });
+  try {
+    if (isProd) {
+      await db.query("DELETE FROM usuario WHERE id_usuario=$1;", [id]);
+      return res.json({ message: "Usuario eliminado correctamente" });
+
+    } else {
+      const { error } = await supabase
+        .from("usuario")
+        .delete()
+        .eq("id_usuario", id);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json({ message: "Usuario eliminado correctamente" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
 });
 
-// ===================================================
+// ============================================================
 // TRABAJOS
-// ===================================================
-app.get("/trabajos", async (req, res) => {
-  const { data, error } = await supabase
-    .from("trabajo")
-    .select(`
-      id_trabajo,
-      titulo,
-      descripcion,
-      ubicacion,
-      fecha_publicado,
-      empleador:empleador_id (id_usuario, nombre, email)
-    `);
+// ============================================================
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json(data);
+app.get("/trabajos", async (req, res) => {
+  try {
+    if (isProd) {
+      const query = `
+        SELECT 
+          t.id_trabajo,
+          t.titulo,
+          t.descripcion,
+          t.ubicacion,
+          t.fecha_publicado,
+          json_build_object(
+            'id_usuario', u.id_usuario,
+            'nombre', u.nombre,
+            'email', u.email
+          ) AS empleador
+        FROM trabajo t
+        LEFT JOIN usuario u ON u.id_usuario = t.empleador_id
+        ORDER BY t.id_trabajo ASC;
+      `;
+      const result = await db.query(query);
+      return res.json(result.rows);
+
+    } else {
+      const { data, error } = await supabase
+        .from("trabajo")
+        .select(`
+          id_trabajo,
+          titulo,
+          descripcion,
+          ubicacion,
+          fecha_publicado,
+          empleador:empleador_id (id_usuario, nombre, email)
+        `);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener trabajos" });
+  }
 });
 
 app.post("/trabajos", async (req, res) => {
   const { titulo, descripcion, ubicacion, empleador_id } = req.body;
 
-  const { data, error } = await supabase
-    .from("trabajo")
-    .insert([{ titulo, descripcion, ubicacion, empleador_id }])
-    .select();
+  try {
+    if (isProd) {
+      const query = `
+        INSERT INTO trabajo (titulo, descripcion, ubicacion, empleador_id, fecha_publicado)
+        VALUES ($1, $2, $3, $4, NOW())
+        RETURNING *;
+      `;
+      const result = await db.query(query, [
+        titulo, descripcion, ubicacion, empleador_id
+      ]);
+      return res.status(201).json(result.rows);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(201).json(data);
+    } else {
+      const { data, error } = await supabase
+        .from("trabajo")
+        .insert([{ titulo, descripcion, ubicacion, empleador_id }])
+        .select();
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.status(201).json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al crear trabajo" });
+  }
 });
 
 app.put("/trabajos/:id", async (req, res) => {
   const { id } = req.params;
   const { titulo, descripcion, ubicacion, empleador_id } = req.body;
 
-  const { data, error } = await supabase
-    .from("trabajo")
-    .update({ titulo, descripcion, ubicacion, empleador_id })
-    .eq("id_trabajo", id)
-    .select();
+  try {
+    if (isProd) {
+      const query = `
+        UPDATE trabajo
+        SET titulo=$1, descripcion=$2, ubicacion=$3, empleador_id=$4
+        WHERE id_trabajo=$5
+        RETURNING *;
+      `;
+      const result = await db.query(query, [
+        titulo, descripcion, ubicacion, empleador_id, id
+      ]);
+      return res.json(result.rows);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json(data);
+    } else {
+      const { data, error } = await supabase
+        .from("trabajo")
+        .update({ titulo, descripcion, ubicacion, empleador_id })
+        .eq("id_trabajo", id)
+        .select();
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al actualizar trabajo" });
+  }
 });
 
 app.delete("/trabajos/:id", async (req, res) => {
   const { id } = req.params;
 
-  const { error } = await supabase.from("trabajo").delete().eq("id_trabajo", id);
-  if (error) return res.status(400).json({ error: error.message });
+  try {
+    if (isProd) {
+      await db.query("DELETE FROM trabajo WHERE id_trabajo=$1;", [id]);
+      return res.json({ message: "Trabajo eliminado correctamente" });
 
-  res.status(200).json({ message: "Trabajo eliminado correctamente" });
+    } else {
+      const { error } = await supabase
+        .from("trabajo")
+        .delete()
+        .eq("id_trabajo", id);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json({ message: "Trabajo eliminado correctamente" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al eliminar trabajo" });
+  }
 });
 
-// ===================================================
+// ============================================================
 // POSTULACIONES
-// ===================================================
-app.get("/postulaciones", async (req, res) => {
-  const { data, error } = await supabase
-    .from("postulacion")
-    .select(`
-      id_postulacion,
-      mensaje,
-      oferta_pago,
-      fecha_postulacion,
-      usuario:usuario_id (id_usuario, nombre),
-      trabajo:trabajo_id (id_trabajo, titulo)
-    `);
+// ============================================================
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(200).json(data);
+app.get("/postulaciones", async (req, res) => {
+  try {
+    if (isProd) {
+      const query = `
+        SELECT
+          p.id_postulacion,
+          p.mensaje,
+          p.oferta_pago,
+          p.fecha_postulacion,
+          json_build_object(
+            'id_usuario', u.id_usuario,
+            'nombre', u.nombre
+          ) AS usuario,
+          json_build_object(
+            'id_trabajo', t.id_trabajo,
+            'titulo', t.titulo
+          ) AS trabajo
+        FROM postulacion p
+        LEFT JOIN usuario u ON u.id_usuario = p.usuario_id
+        LEFT JOIN trabajo t ON t.id_trabajo = p.trabajo_id
+        ORDER BY p.id_postulacion ASC;
+      `;
+      const result = await db.query(query);
+      return res.json(result.rows);
+
+    } else {
+      const { data, error } = await supabase
+        .from("postulacion")
+        .select(`
+          id_postulacion,
+          mensaje,
+          oferta_pago,
+          fecha_postulacion,
+          usuario:usuario_id (id_usuario, nombre),
+          trabajo:trabajo_id (id_trabajo, titulo)
+        `);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al obtener postulaciones" });
+  }
 });
 
 app.post("/postulaciones", async (req, res) => {
   const { trabajo_id, usuario_id, mensaje, oferta_pago } = req.body;
 
-  const { data, error } = await supabase
-    .from("postulacion")
-    .insert([{ trabajo_id, usuario_id, mensaje, oferta_pago }])
-    .select();
+  try {
+    if (isProd) {
+      const query = `
+        INSERT INTO postulacion (trabajo_id, usuario_id, mensaje, oferta_pago, fecha_postulacion)
+        VALUES ($1, $2, $3, $4, NOW())
+        RETURNING *;
+      `;
+      const result = await db.query(query, [
+        trabajo_id, usuario_id, mensaje, oferta_pago
+      ]);
+      return res.status(201).json(result.rows);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(201).json(data);
+    } else {
+      const { data, error } = await supabase
+        .from("postulacion")
+        .insert([{ trabajo_id, usuario_id, mensaje, oferta_pago }])
+        .select();
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.status(201).json(data);
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al crear postulación" });
+  }
 });
 
 app.delete("/postulaciones/:id", async (req, res) => {
   const { id } = req.params;
 
-  const { error } = await supabase.from("postulacion").delete().eq("id_postulacion", id);
-  if (error) return res.status(400).json({ error: error.message });
+  try {
+    if (isProd) {
+      await db.query("DELETE FROM postulacion WHERE id_postulacion=$1;", [id]);
+      return res.json({ message: "Postulación eliminada correctamente" });
 
-  res.status(200).json({ message: "Postulación eliminada correctamente" });
+    } else {
+      const { error } = await supabase
+        .from("postulacion")
+        .delete()
+        .eq("id_postulacion", id);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json({ message: "Postulación eliminada correctamente" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ error: "Error al eliminar postulación" });
+  }
 });
 
-// ===================================================
-// RUTAS AUXILIARES
-// ===================================================
+// ============================================================
+// SELECT simples
+// ============================================================
+
 app.get("/usuarios/select", async (req, res) => {
+  if (isProd) {
+    const result = await db.query(
+      "SELECT id_usuario, nombre FROM usuario ORDER BY nombre ASC;"
+    );
+    return res.json(result.rows);
+  }
+
   const { data, error } = await supabase
     .from("usuario")
     .select("id_usuario, nombre")
@@ -212,6 +419,13 @@ app.get("/usuarios/select", async (req, res) => {
 });
 
 app.get("/trabajos/select", async (req, res) => {
+  if (isProd) {
+    const result = await db.query(
+      "SELECT id_trabajo, titulo FROM trabajo ORDER BY titulo ASC;"
+    );
+    return res.json(result.rows);
+  }
+
   const { data, error } = await supabase
     .from("trabajo")
     .select("id_trabajo, titulo")
@@ -221,33 +435,25 @@ app.get("/trabajos/select", async (req, res) => {
   res.json(data);
 });
 
-// ===================================================
-// HOME (para Azure WebApp)
-// ===================================================
+// ============================================================
+// HOME & HEALTH
+// ============================================================
+
 app.get("/", (req, res) => {
   res.send(`
     <h1>🚀 MiniChangApp Backend desplegado correctamente</h1>
-    <p>Entorno: ${process.env.NODE_ENV || "producción"}</p>
-    <ul>
-      <li><a href="/usuarios">/usuarios</a></li>
-      <li><a href="/trabajos">/trabajos</a></li>
-      <li><a href="/postulaciones">/postulaciones</a></li>
-      <li><a href="/health">/health</a></li>
-    </ul>
+    <p>Entorno: ${process.env.NODE_ENV}</p>
   `);
 });
 
-// ===================================================
-// HEALTH CHECK
-// ===================================================
-app.get("/health", (req, res) => {
-  console.log("Health check recibido");
+app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// ===================================================
-// SERVIDOR
-// ===================================================
+// ============================================================
+// SERVER
+// ============================================================
+
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV !== "test") {
