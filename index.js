@@ -2,6 +2,29 @@ import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import pkg from "pg";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// ============================================================
+// FIX ABSOLUTO: CARGA DE VARIABLES DE ENTORNO
+// ============================================================
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+if (process.env.NODE_ENV === "test") {
+  const envPath = path.join(__dirname, ".env.test");
+  console.log("🔧 Cargando .env.test desde:", envPath);
+
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config();
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
 
 const { Pool } = pkg;
 
@@ -11,13 +34,13 @@ app.use(cors());
 app.use(express.static("public"));
 
 // ============================================================
-// SELECCIÓN DINÁMICA DE BASE DE DATOS SEGÚN ENTORNO
+// SELECCIÓN DE BASE DE DATOS SEGÚN ENTORNO
 // ============================================================
 
 const isProd = process.env.NODE_ENV === "production";
 
-let db = null;      // Neon (pg)
-let supabase = null; // Supabase (QA)
+let db = null;      
+let supabase = null;
 
 if (isProd) {
   console.log("🟢 Conectando a NEON (PROD)...");
@@ -28,7 +51,9 @@ if (isProd) {
   });
 
 } else {
-  console.log("🟠 Conectando a SUPABASE (QA)...");
+  console.log("🟠 Conectando a SUPABASE (QA/Test)...");
+  console.log("➡ SUPABASE_URL:", process.env.SUPABASE_URL ?? "(VACÍO)");
+  console.log("➡ SUPABASE_KEY:", process.env.SUPABASE_KEY ? "(CARGADA)" : "(VACÍA)");
 
   supabase = createClient(
     process.env.SUPABASE_URL,
