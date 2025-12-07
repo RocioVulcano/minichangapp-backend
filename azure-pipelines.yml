@@ -106,6 +106,7 @@ stages:
 
 
 
+
 # ===========================
 #    STAGE 4: DEPLOY PROD
 # ===========================
@@ -130,12 +131,14 @@ stages:
               appName: $(webAppPROD)
               package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
 
-          - task: AzureWebApp@1
+          - task: AzureAppServiceSettings@1
             displayName: "Variables PROD"
             inputs:
               azureSubscription: '$(azureSubscription)'
-              appType: webApp
               appName: $(webAppPROD)
               appSettings: |
-                NODE_ENV=production
-                DATABASE_URL_PROD=$(DATABASE_URL_PROD)
+                [
+                  { "name": "NODE_ENV", "value": "production" },
+                  { "name": "DATABASE_URL_PROD", "value": "$(DATABASE_URL_PROD)" }
+                ]
+
