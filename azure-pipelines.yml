@@ -8,14 +8,18 @@ variables:
   nodeVersion: '22.x'
   azureSubscription: 'azure-for-students'
 
-  # WebApps correctas
+  # BACKEND
   webAppQA: 'changapp-qa'
   webAppPROD: 'changapp-prod'
+
+  # FRONTEND
+  webFrontQA: 'changapp-front-qa'
+  webFrontPROD: 'changapp-front-prod'
 
 stages:
 
 # ===========================
-#       STAGE 1: BUILD
+#       BUILD
 # ===========================
 - stage: Build
   displayName: 'Build and Package'
@@ -29,15 +33,26 @@ stages:
       displayName: 'Usar Node.js'
 
     - script: npm ci
-      displayName: 'Instalar dependencias'
+      displayName: 'Instalar dependencias backend'
 
+    # Empaquetar BACKEND
     - task: ArchiveFiles@2
-      displayName: 'Empaquetar aplicación'
+      displayName: 'Empaquetar BACKEND'
       inputs:
         rootFolderOrFile: '$(Build.SourcesDirectory)'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/MiniChangApp.zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
+        replaceExistingArchive: true
+
+    # Empaquetar FRONTEND (solo carpeta /front)
+    - task: ArchiveFiles@2
+      displayName: 'Empaquetar FRONTEND'
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/front'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
         replaceExistingArchive: true
 
     - task: PublishBuildArtifacts@1
@@ -49,7 +64,7 @@ stages:
 
 
 # ===========================
-#       STAGE 2: TEST
+#       TEST
 # ===========================
 - stage: Test
   dependsOn: Build
@@ -69,7 +84,7 @@ stages:
 
 
 # ===========================
-#     STAGE 3: DEPLOY QA
+#     DEPLOY QA
 # ===========================
 - stage: Deploy_QA
   dependsOn: Test
@@ -84,16 +99,17 @@ stages:
           - download: current
             artifact: drop
 
+          # BACKEND QA
           - task: AzureWebApp@1
-            displayName: 'Deploy en QA'
+            displayName: 'Deploy BACKEND en QA'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: webApp
               appName: $(webAppQA)
-              package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
+              package: '$(Pipeline.Workspace)/drop/backend.zip'
 
           - task: AzureAppServiceSettings@1
-            displayName: "Variables QA"
+            displayName: "Variables BACKEND QA"
             inputs:
               azureSubscription: '$(azureSubscription)'
               appName: $(webAppQA)
@@ -104,11 +120,18 @@ stages:
                   { "name": "SUPABASE_KEY", "value": "$(SUPABASE_KEY)" }
                 ]
 
-
+          # FRONTEND QA
+          - task: AzureWebApp@1
+            displayName: 'Deploy FRONTEND en QA'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: webApp
+              appName: $(webFrontQA)
+              package: '$(Pipeline.Workspace)/drop/frontend.zip'
 
 
 # ===========================
-#    STAGE 4: DEPLOY PROD
+#     DEPLOY PROD
 # ===========================
 - stage: Deploy_PROD
   dependsOn: Deploy_QA
@@ -123,16 +146,17 @@ stages:
           - download: current
             artifact: drop
 
+          # BACKEND PROD
           - task: AzureWebApp@1
-            displayName: 'Deploy en PROD'
+            displayName: 'Deploy BACKEND en PROD'
             inputs:
               azureSubscription: '$(azureSubscription)'
               appType: webApp
               appName: $(webAppPROD)
-              package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
+              package: '$(Pipeline.Workspace)/drop/backend.zip'
 
           - task: AzureAppServiceSettings@1
-            displayName: "Variables PROD"
+            displayName: "Variables BACKEND PROD"
             inputs:
               azureSubscription: '$(azureSubscription)'
               appName: $(webAppPROD)
@@ -142,3 +166,11 @@ stages:
                   { "name": "DATABASE_URL_PROD", "value": "$(DATABASE_URL_PROD)" }
                 ]
 
+          # FRONTEND PROD
+          - task: AzureWebApp@1
+            displayName: 'Deploy FRONTEND en PROD'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: webApp
+              appName: $(webFrontPROD)
+              package: '$(Pipeline.Workspace)/drop/frontend.zip'
