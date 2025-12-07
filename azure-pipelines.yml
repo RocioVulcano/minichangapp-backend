@@ -115,9 +115,7 @@ stages:
               appName: $(webAppQA)
               appSettings: |
                 [
-                  { "name": "NODE_ENV", "value": "qa" },
-                  { "name": "SUPABASE_URL", "value": "$(SUPABASE_URL)" },
-                  { "name": "SUPABASE_KEY", "value": "$(SUPABASE_KEY)" }
+                  { "name": "NODE_ENV", "value": "qa" }
                 ]
 
           # FRONTEND QA
@@ -162,8 +160,7 @@ stages:
               appName: $(webAppPROD)
               appSettings: |
                 [
-                  { "name": "NODE_ENV", "value": "production" },
-                  { "name": "DATABASE_URL_PROD", "value": "$(DATABASE_URL_PROD)" }
+                  { "name": "NODE_ENV", "value": "production" }
                 ]
 
           # FRONTEND PROD
