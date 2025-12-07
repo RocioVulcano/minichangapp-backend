@@ -1,7 +1,7 @@
 jest.mock("open", () => jest.fn()); // Evita que Jest ejecute el paquete 'open'
 
 import request from "supertest";
-import app from "../index.js";
+import app from "../app.js";
 import { createClient } from "@supabase/supabase-js";
 
 // 🧩 1️⃣ Simulamos Supabase
