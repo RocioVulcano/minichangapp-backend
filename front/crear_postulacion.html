@@ -62,8 +62,8 @@
 
       try {
         const [trabajosRes, usuariosRes] = await Promise.all([
-          fetch(`${API_URL}/trabajos/select`),
-          fetch(`${API_URL}/usuarios/select`)
+          fetch(`${API_URL}/trabajos`),
+          fetch(`${API_URL}/usuarios`)
         ]);
 
         const trabajos = await trabajosRes.json();
