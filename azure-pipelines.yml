@@ -9,8 +9,9 @@ variables:
   azureSubscription: 'azure-for-students'
 
   # WebApps correctas
-  webAppQA: 'changapp-qa'
-  webAppPROD: 'changapp-prod'
+webAppQA: 'changapp-qa-f2dkejh0dxeshbh4'
+webAppPROD: 'changapp-prod-atcjfjgnbkhde0g2'
+
 
 stages:
 
