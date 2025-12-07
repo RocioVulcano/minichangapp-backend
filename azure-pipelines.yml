@@ -92,16 +92,18 @@ stages:
               appName: $(webAppQA)
               package: '$(Pipeline.Workspace)/drop/MiniChangApp.zip'
 
-          - task: AzureWebApp@1
+          - task: AzureAppServiceSettings@1
             displayName: "Variables QA"
             inputs:
               azureSubscription: '$(azureSubscription)'
-              appType: webApp
               appName: $(webAppQA)
               appSettings: |
-                NODE_ENV=qa
-                SUPABASE_URL=$(SUPABASE_URL)
-                SUPABASE_KEY=$(SUPABASE_KEY)
+                [
+                  { "name": "NODE_ENV", "value": "qa" },
+                  { "name": "SUPABASE_URL", "value": "$(SUPABASE_URL)" },
+                  { "name": "SUPABASE_KEY", "value": "$(SUPABASE_KEY)" }
+                ]
+
 
 
 # ===========================
