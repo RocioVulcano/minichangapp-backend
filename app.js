@@ -5,9 +5,8 @@ import pkg from "pg";
 import dotenv from "dotenv";
 
 // ============================================================
-// CARGA DE VARIABLES DE ENTORNO (SIN import.meta.url)
+// CARGA DE VARIABLES DE ENTORNO SEGÚN ENTORNO
 // ============================================================
-
 if (process.env.NODE_ENV === "test") {
   console.log("🔧 Cargando variables desde .env.test");
   dotenv.config({ path: ".env.test" });
@@ -16,7 +15,7 @@ if (process.env.NODE_ENV === "test") {
 }
 
 // ============================================================
-// INICIALIZACIÓN
+// INICIALIZACIÓN GENERAL
 // ============================================================
 const { Pool } = pkg;
 
@@ -25,14 +24,14 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("public"));
 
-// ============================================================
-// SELECCIÓN DE BASE DE DATOS SEGÚN ENTORNO
-// ============================================================
 const isProd = process.env.NODE_ENV === "production";
 
 let db = null;
 let supabase = null;
 
+// ============================================================
+// CONEXIÓN A BASE DE DATOS
+// ============================================================
 if (isProd) {
   console.log("🟢 Conectando a NEON (PROD)...");
 
@@ -53,8 +52,10 @@ if (isProd) {
 }
 
 // ============================================================
-// USUARIOS
+// ===============   RUTAS DE USUARIOS   =======================
 // ============================================================
+
+// GET usuarios
 app.get("/usuarios", async (req, res) => {
   try {
     if (isProd) {
@@ -64,6 +65,7 @@ app.get("/usuarios", async (req, res) => {
 
     const { data, error } = await supabase.from("usuario").select("*");
     if (error) return res.status(400).json({ error: error.message });
+
     res.json(data);
 
   } catch (err) {
@@ -71,9 +73,11 @@ app.get("/usuarios", async (req, res) => {
   }
 });
 
+// POST crear usuario
 app.post("/usuarios", async (req, res) => {
   const { nombre, email, rol } = req.body;
 
+  // Validaciones
   if (!nombre || !email || !rol) {
     return res.status(400).json({ error: "Todos los campos son obligatorios." });
   }
@@ -117,13 +121,79 @@ app.post("/usuarios", async (req, res) => {
   }
 });
 
-// TODO: EL RESTO DE TUS RUTAS QUEDAN IGUAL
+// PUT actualizar usuario
+app.put("/usuarios/:id", async (req, res) => {
+  const id = req.params.id;
+  const { nombre, email, rol } = req.body;
 
-// (PEGUÉ AQUÍ TODO)
-///////////////////////////////////////////////////////////////
-////////////////////  💛💛💛  /////////////////////////////////
-///////////////////////////////////////////////////////////////
+  try {
+    if (isProd) {
+      const query = `
+        UPDATE usuario
+        SET nombre = $1, email = $2, rol = $3
+        WHERE id_usuario = $4
+        RETURNING *;
+      `;
+      const result = await db.query(query, [nombre, email, rol, id]);
+      if (!result.rows.length) return res.status(404).json({ error: "Usuario no encontrado" });
 
+      return res.json(result.rows);
+
+    } else {
+      const { data, error } = await supabase
+        .from("usuario")
+        .update({ nombre, email, rol })
+        .eq("id_usuario", id)
+        .select();
+
+      if (error) return res.status(400).json({ error: error.message });
+      if (!data.length) return res.status(404).json({ error: "Usuario no encontrado" });
+
+      return res.json(data);
+    }
+
+  } catch {
+    res.status(500).json({ error: "Error actualizando usuario" });
+  }
+});
+
+// DELETE eliminar usuario
+app.delete("/usuarios/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    if (isProd) {
+      const query = `
+        DELETE FROM usuario
+        WHERE id_usuario = $1
+        RETURNING *;
+      `;
+      const result = await db.query(query, [id]);
+      if (!result.rows.length) return res.status(404).json({ error: "Usuario no encontrado" });
+
+      return res.json({ message: "Usuario eliminado correctamente" });
+
+    } else {
+      const { error } = await supabase
+        .from("usuario")
+        .delete()
+        .eq("id_usuario", id);
+
+      if (error) return res.status(400).json({ error: error.message });
+
+      return res.json({ message: "Usuario eliminado correctamente" });
+    }
+
+  } catch {
+    res.status(500).json({ error: "Error eliminando usuario" });
+  }
+});
+
+// ============================================================
+// ===============   RUTAS DE TRABAJOS   =======================
+// ============================================================
+
+// GET trabajos
 app.get("/trabajos", async (req, res) => {
   try {
     if (isProd) {
@@ -162,12 +232,65 @@ app.get("/trabajos", async (req, res) => {
       res.json(data);
     }
 
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Error al obtener trabajos" });
   }
 });
 
-// SIGUEN TODAS TUS RUTAS… (no las borro por longitud del mensaje)
+// POST crear trabajo
+app.post("/trabajos", async (req, res) => {
+  const { titulo, descripcion, ubicacion, empleador_id } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from("trabajo")
+      .insert([{ titulo, descripcion, ubicacion, empleador_id }])
+      .select();
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.status(201).json(data);
+
+  } catch {
+    res.status(500).json({ error: "Error creando trabajo" });
+  }
+});
+
+// ============================================================
+// ============   RUTAS DE POSTULACIONES   =====================
+// ============================================================
+
+// GET postulaciones
+app.get("/postulaciones", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("postulacion").select("*");
+    if (error) return res.status(400).json({ error: error.message });
+
+    res.json(data);
+
+  } catch {
+    res.status(500).json({ error: "Error al obtener postulaciones" });
+  }
+});
+
+// POST crear postulacion
+app.post("/postulaciones", async (req, res) => {
+  const { trabajo_id, usuario_id, mensaje, oferta_pago } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .from("postulacion")
+      .insert([{ trabajo_id, usuario_id, mensaje, oferta_pago }])
+      .select();
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    res.status(201).json(data);
+
+  } catch {
+    res.status(500).json({ error: "Error creando postulación" });
+  }
+});
 
 // ============================================================
 // HOME & HEALTH
