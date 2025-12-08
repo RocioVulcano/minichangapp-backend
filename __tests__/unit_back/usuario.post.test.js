@@ -20,7 +20,7 @@ jest.mock("@supabase/supabase-js", () => {
 });
 
 import request from "supertest";
-import app from "../app.js";
+import app from "../../app.js";
 import { createClient } from "@supabase/supabase-js";
 
 const mockFrom = createClient().from;

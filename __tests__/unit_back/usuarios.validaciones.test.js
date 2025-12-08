@@ -1,7 +1,7 @@
 jest.mock("open", () => jest.fn());
 
 import request from "supertest";
-import app from "../app.js";
+import app from "../../app.js";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({

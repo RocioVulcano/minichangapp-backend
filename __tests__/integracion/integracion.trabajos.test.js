@@ -1,6 +1,6 @@
 // __tests__/integracion.trabajos.test.js
 import request from "supertest";
-import app from "../app.js";
+import app from "../../app.js";
 
 describe("🧪 Pruebas de integración - Trabajos", () => {
 
