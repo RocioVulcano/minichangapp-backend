@@ -1,7 +1,9 @@
 ﻿import dotenv from 'dotenv';
 
 // Cargar dotenv
-dotenv.config();
+// NO pisar variables del sistema (Azure, Heroku, Render, Docker)
+dotenv.config({ override: false });
+
 
 console.log('✅ Dotenv cargado');
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? 'EXISTE' : 'NO EXISTE');
