@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="12.714" tests="8" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:24:34" tests="0" file="cypress\e2e\flujos-completos.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔄 E2E - Flujos Completos" timestamp="2025-12-09T19:24:34" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Flujo: Empleador publica trabajo y recibe postulaciones" timestamp="2025-12-09T19:24:34" tests="4" time="6.134" failures="1">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Empleador publica trabajo y recibe postulaciones ✅ Paso 1: Empleador publica trabajo" time="2.036" classname="✅ Paso 1: Empleador publica trabajo">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Empleador publica trabajo y recibe postulaciones ✅ Paso 2: Candidato 1 postula al trabajo" time="0.660" classname="✅ Paso 2: Candidato 1 postula al trabajo">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Empleador publica trabajo y recibe postulaciones ✅ Paso 3: Candidato 2 postula al mismo trabajo" time="0.592" classname="✅ Paso 3: Candidato 2 postula al mismo trabajo">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Empleador publica trabajo y recibe postulaciones ✅ Paso 4: Verificar que el trabajo tiene postulaciones" time="0.000" classname="✅ Paso 4: Verificar que el trabajo tiene postulaciones">
+      <failure message="expected 0 to be above 0" type="AssertionError"><![CDATA[AssertionError: expected 0 to be above 0
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/flujos-completos.cy.js:87:55)]]></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Flujo: Actualización en cadena" timestamp="2025-12-09T19:24:40" tests="3" time="3.675" failures="0">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar usuario y verificar cambios" time="1.456" classname="✅ Actualizar usuario y verificar cambios">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar trabajo y verificar cambios" time="0.350" classname="✅ Actualizar trabajo y verificar cambios">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar postulación y verificar cambios" time="0.376" classname="✅ Actualizar postulación y verificar cambios">
+    </testcase>
+  </testsuite>
+  <testsuite name="Flujo: Eliminar usuario con trabajos y postulaciones" timestamp="2025-12-09T19:24:44" tests="1" time="2.883" failures="0">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Eliminar usuario con trabajos y postulaciones ✅ Eliminar trabajos primero, luego usuario" time="1.991" classname="✅ Eliminar trabajos primero, luego usuario">
+    </testcase>
+  </testsuite>
+</testsuites>

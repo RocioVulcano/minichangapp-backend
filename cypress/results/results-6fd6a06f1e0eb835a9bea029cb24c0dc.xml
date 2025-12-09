@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="12.760" tests="8" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:12:41" tests="0" file="cypress\e2e\flujos-completos.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔄 E2E - Flujos Completos" timestamp="2025-12-09T19:12:41" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Flujo: Empleador publica trabajo y recibe postulaciones" timestamp="2025-12-09T19:12:41" tests="4" time="4.042" failures="1">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Empleador publica trabajo y recibe postulaciones &quot;before all&quot; hook for &quot;✅ Paso 1: Empleador publica trabajo&quot;" time="0.000" classname="&quot;before all&quot; hook for &quot;✅ Paso 1: Empleador publica trabajo&quot;">
+      <failure message="`cy.request()` failed on:
+
+http://localhost:3000/usuarios
+
+The response we received from your web server was:
+
+  &gt; 400: Bad Request
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:3000/usuarios
+Headers: {
+  &quot;Connection&quot;: &quot;keep-alive&quot;,
+  &quot;user-agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.17.0 Chrome/118.0.5993.159 Electron/27.3.10 Safari/537.36&quot;,
+  &quot;accept&quot;: &quot;*/*&quot;,
+  &quot;accept-encoding&quot;: &quot;gzip, deflate&quot;,
+  &quot;content-type&quot;: &quot;application/json&quot;,
+  &quot;content-length&quot;: 88
+}
+Body: {&quot;nombre&quot;:&quot;Candidato Uno&quot;,&quot;email&quot;:&quot;candidato1.1765307561085@test.com&quot;,&quot;rol&quot;:&quot;candidato&quot;}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 400 - Bad Request
+Headers: {
+  &quot;x-powered-by&quot;: &quot;Express&quot;,
+  &quot;access-control-allow-origin&quot;: &quot;*&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset=utf-8&quot;,
+  &quot;content-length&quot;: &quot;92&quot;,
+  &quot;etag&quot;: &quot;W/\&quot;5c-SZ2y1XVyvK6Qq2KRHo70psoYHOs\&quot;&quot;,
+  &quot;date&quot;: &quot;Tue, 09 Dec 2025 19:12:43 GMT&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;keep-alive&quot;: &quot;timeout=5&quot;
+}
+Body: {
+  &quot;error&quot;: &quot;new row for relation \&quot;usuario\&quot; violates check constraint \&quot;usuario_rol_check\&quot;&quot;
+}
+
+
+https://on.cypress.io/request
+
+Because this error occurred during a `before all` hook we are skipping the remaining tests in the current suite: `Flujo: Empleador publica tr...`" type="CypressError"><![CDATA[CypressError: `cy.request()` failed on:
+
+http://localhost:3000/usuarios
+
+The response we received from your web server was:
+
+  > 400: Bad Request
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:3000/usuarios
+Headers: {
+  "Connection": "keep-alive",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.17.0 Chrome/118.0.5993.159 Electron/27.3.10 Safari/537.36",
+  "accept": "*/*",
+  "accept-encoding": "gzip, deflate",
+  "content-type": "application/json",
+  "content-length": 88
+}
+Body: {"nombre":"Candidato Uno","email":"candidato1.1765307561085@test.com","rol":"candidato"}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 400 - Bad Request
+Headers: {
+  "x-powered-by": "Express",
+  "access-control-allow-origin": "*",
+  "content-type": "application/json; charset=utf-8",
+  "content-length": "92",
+  "etag": "W/\"5c-SZ2y1XVyvK6Qq2KRHo70psoYHOs\"",
+  "date": "Tue, 09 Dec 2025 19:12:43 GMT",
+  "connection": "keep-alive",
+  "keep-alive": "timeout=5"
+}
+Body: {
+  "error": "new row for relation \"usuario\" violates check constraint \"usuario_rol_check\""
+}
+
+
+https://on.cypress.io/request
+
+Because this error occurred during a `before all` hook we are skipping the remaining tests in the current suite: `Flujo: Empleador publica tr...`
+    at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:132876:72)
+    at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1830:23)
+    at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1542:31)
+    at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1599:18)
+    at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1644:10)
+    at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1724:18)
+    at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2430:12)
+    at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2423:9)
+    at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2439:5)
+    at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2309:14)
+From Your Spec Code:
+    at Context.eval (webpack://minichangapp-backend/./cypress/support/commands.js:22:4)]]></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Flujo: Actualización en cadena" timestamp="2025-12-09T19:12:45" tests="3" time="4.822" failures="0">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar usuario y verificar cambios" time="2.323" classname="✅ Actualizar usuario y verificar cambios">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar trabajo y verificar cambios" time="0.717" classname="✅ Actualizar trabajo y verificar cambios">
+    </testcase>
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Actualización en cadena ✅ Actualizar postulación y verificar cambios" time="0.442" classname="✅ Actualizar postulación y verificar cambios">
+    </testcase>
+  </testsuite>
+  <testsuite name="Flujo: Eliminar usuario con trabajos y postulaciones" timestamp="2025-12-09T19:12:49" tests="1" time="3.869" failures="0">
+    <testcase name="🔄 E2E - Flujos Completos Flujo: Eliminar usuario con trabajos y postulaciones ✅ Eliminar trabajos primero, luego usuario" time="2.230" classname="✅ Eliminar trabajos primero, luego usuario">
+    </testcase>
+  </testsuite>
+</testsuites>

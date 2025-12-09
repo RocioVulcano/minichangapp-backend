@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="5.699" tests="14" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:32:32" tests="0" file="cypress\e2e\validaciones.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔍 E2E - Validaciones y Casos Edge" timestamp="2025-12-09T19:32:32" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Validaciones de Usuarios" timestamp="2025-12-09T19:32:32" tests="6" time="0.651" failures="0">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin nombre" time="0.069" classname="❌ Debería rechazar usuario sin nombre">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin email" time="0.032" classname="❌ Debería rechazar usuario sin email">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar email inválido" time="0.039" classname="❌ Debería rechazar email inválido">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre con números" time="0.053" classname="❌ Debería rechazar nombre con números">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre muy corto" time="0.047" classname="❌ Debería rechazar nombre muy corto">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombres genéricos" time="0.117" classname="❌ Debería rechazar nombres genéricos">
+    </testcase>
+  </testsuite>
+  <testsuite name="Casos Edge - IDs no existentes" timestamp="2025-12-09T19:32:33" tests="5" time="2.587" failures="1">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET usuario inexistente debería retornar 404" time="0.349" classname="❌ GET usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ PUT usuario inexistente debería retornar 404" time="0.275" classname="❌ PUT usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ DELETE usuario inexistente debería retornar 404" time="0.000" classname="❌ DELETE usuario inexistente debería retornar 404">
+      <failure message="expected 200 to equal 404" type="AssertionError"><![CDATA[AssertionError: expected 200 to equal 404
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:134:35)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET trabajo inexistente debería retornar 404" time="0.306" classname="❌ GET trabajo inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET postulación inexistente debería retornar 404" time="0.391" classname="❌ GET postulación inexistente debería retornar 404">
+    </testcase>
+  </testsuite>
+  <testsuite name="Manejo de Caracteres Especiales" timestamp="2025-12-09T19:32:35" tests="3" time="2.446" failures="0">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con tildes" time="0.316" classname="✅ Debería manejar nombres con tildes">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con ñ" time="0.561" classname="✅ Debería manejar nombres con ñ">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar descripciones largas en trabajos" time="0.767" classname="✅ Debería manejar descripciones largas en trabajos">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="11.127" tests="14" failures="7">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:26:01" tests="0" file="cypress\e2e\validaciones.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔍 E2E - Validaciones y Casos Edge" timestamp="2025-12-09T19:26:01" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Validaciones de Usuarios" timestamp="2025-12-09T19:26:01" tests="6" time="3.107" failures="6">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin nombre" time="0.000" classname="❌ Debería rechazar usuario sin nombre">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:16:30)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin email" time="0.000" classname="❌ Debería rechazar usuario sin email">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:31:30)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar email inválido" time="0.000" classname="❌ Debería rechazar email inválido">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:47:30)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre con números" time="0.000" classname="❌ Debería rechazar nombre con números">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:63:30)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre muy corto" time="0.000" classname="❌ Debería rechazar nombre muy corto">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:79:30)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombres genéricos" time="0.000" classname="❌ Debería rechazar nombres genéricos">
+      <failure message="expected [ 200, 404 ] to include 400" type="AssertionError"><![CDATA[AssertionError: expected [ 200, 404 ] to include 400
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:98:32)]]></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Casos Edge - IDs no existentes" timestamp="2025-12-09T19:26:05" tests="5" time="4.298" failures="1">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET usuario inexistente debería retornar 404" time="1.414" classname="❌ GET usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ PUT usuario inexistente debería retornar 404" time="0.511" classname="❌ PUT usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ DELETE usuario inexistente debería retornar 404" time="0.000" classname="❌ DELETE usuario inexistente debería retornar 404">
+      <failure message="object tested must be an array, a map, an object, a set, a string, or a weakset, but undefined given" type="AssertionError"><![CDATA[AssertionError: object tested must be an array, a map, an object, a set, a string, or a weakset, but undefined given
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:140:8)]]></failure>
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET trabajo inexistente debería retornar 404" time="0.504" classname="❌ GET trabajo inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET postulación inexistente debería retornar 404" time="0.556" classname="❌ GET postulación inexistente debería retornar 404">
+    </testcase>
+  </testsuite>
+  <testsuite name="Manejo de Caracteres Especiales" timestamp="2025-12-09T19:26:09" tests="3" time="3.711" failures="0">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con tildes" time="0.783" classname="✅ Debería manejar nombres con tildes">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con ñ" time="0.522" classname="✅ Debería manejar nombres con ñ">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar descripciones largas en trabajos" time="1.087" classname="✅ Debería manejar descripciones largas en trabajos">
+    </testcase>
+  </testsuite>
+</testsuites>

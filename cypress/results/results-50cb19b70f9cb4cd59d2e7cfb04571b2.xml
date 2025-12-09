@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="3.749" tests="8" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:37:08" tests="0" file="cypress\e2e\seguridad.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔒 E2E - Seguridad Básica" timestamp="2025-12-09T19:37:08" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Inyección SQL (Básico)" timestamp="2025-12-09T19:37:08" tests="2" time="0.557" failures="0">
+    <testcase name="🔒 E2E - Seguridad Básica Inyección SQL (Básico) ❌ Debería rechazar SQL injection en nombre" time="0.433" classname="❌ Debería rechazar SQL injection en nombre">
+    </testcase>
+    <testcase name="🔒 E2E - Seguridad Básica Inyección SQL (Básico) ❌ Debería rechazar SQL injection en email" time="0.049" classname="❌ Debería rechazar SQL injection en email">
+    </testcase>
+  </testsuite>
+  <testsuite name="XSS (Cross-Site Scripting)" timestamp="2025-12-09T19:37:08" tests="2" time="1.072" failures="0">
+    <testcase name="🔒 E2E - Seguridad Básica XSS (Cross-Site Scripting) ✅ Debería sanitizar scripts en nombre" time="0.316" classname="✅ Debería sanitizar scripts en nombre">
+    </testcase>
+    <testcase name="🔒 E2E - Seguridad Básica XSS (Cross-Site Scripting) ✅ Debería sanitizar HTML en descripción de trabajo" time="0.648" classname="✅ Debería sanitizar HTML en descripción de trabajo">
+    </testcase>
+  </testsuite>
+  <testsuite name="Validación de Tipos de Datos" timestamp="2025-12-09T19:37:09" tests="2" time="0.689" failures="0">
+    <testcase name="🔒 E2E - Seguridad Básica Validación de Tipos de Datos ❌ Debería rechazar string en campo numérico" time="0.272" classname="❌ Debería rechazar string en campo numérico">
+    </testcase>
+    <testcase name="🔒 E2E - Seguridad Básica Validación de Tipos de Datos ❌ Debería rechazar oferta_pago negativa" time="0.317" classname="❌ Debería rechazar oferta_pago negativa">
+    </testcase>
+  </testsuite>
+  <testsuite name="Límites y Tamaños" timestamp="2025-12-09T19:37:10" tests="2" time="1.416" failures="0">
+    <testcase name="🔒 E2E - Seguridad Básica Límites y Tamaños ✅ Debería manejar textos muy largos" time="0.927" classname="✅ Debería manejar textos muy largos">
+    </testcase>
+    <testcase name="🔒 E2E - Seguridad Básica Límites y Tamaños ❌ Debería rechazar email demasiado largo" time="0.370" classname="❌ Debería rechazar email demasiado largo">
+    </testcase>
+  </testsuite>
+</testsuites>

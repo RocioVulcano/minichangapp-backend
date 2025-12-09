@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="8.497" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:14:21" tests="0" file="cypress\e2e\usuarios.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔗 E2E - Usuarios API" timestamp="2025-12-09T19:14:21" tests="6" time="8.481" failures="0">
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería listar todos los usuarios (GET /usuarios)" time="0.774" classname="✅ Debería listar todos los usuarios (GET /usuarios)">
+    </testcase>
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería crear un nuevo usuario (POST /usuarios)" time="0.757" classname="✅ Debería crear un nuevo usuario (POST /usuarios)">
+    </testcase>
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería obtener un usuario por ID (GET /usuarios/:id)" time="0.964" classname="✅ Debería obtener un usuario por ID (GET /usuarios/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería actualizar un usuario (PUT /usuarios/:id)" time="1.177" classname="✅ Debería actualizar un usuario (PUT /usuarios/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería eliminar un usuario (DELETE /usuarios/:id)" time="1.030" classname="✅ Debería eliminar un usuario (DELETE /usuarios/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Usuarios API ✅ Debería manejar usuarios con roles diferentes" time="1.795" classname="✅ Debería manejar usuarios con roles diferentes">
+    </testcase>
+  </testsuite>
+</testsuites>

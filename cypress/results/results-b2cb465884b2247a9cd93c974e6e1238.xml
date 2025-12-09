@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="1.491" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:31:23" tests="0" file="cypress\e2e\health.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🏥 E2E - Health Checks" timestamp="2025-12-09T19:31:23" tests="4" time="1.477" failures="0">
+    <testcase name="🏥 E2E - Health Checks ✅ GET / debería retornar página de bienvenida" time="0.084" classname="✅ GET / debería retornar página de bienvenida">
+    </testcase>
+    <testcase name="🏥 E2E - Health Checks ✅ GET /health debería retornar status OK" time="0.066" classname="✅ GET /health debería retornar status OK">
+    </testcase>
+    <testcase name="🏥 E2E - Health Checks ✅ Todos los endpoints principales deberían estar disponibles" time="0.991" classname="✅ Todos los endpoints principales deberían estar disponibles">
+    </testcase>
+    <testcase name="🏥 E2E - Health Checks ❌ Endpoint inexistente debería retornar 404" time="0.054" classname="❌ Endpoint inexistente debería retornar 404">
+    </testcase>
+  </testsuite>
+</testsuites>

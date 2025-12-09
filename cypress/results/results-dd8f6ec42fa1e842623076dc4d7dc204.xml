@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="8.217" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:25:36" tests="0" file="cypress\e2e\trabajos.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔗 E2E - Trabajos API" timestamp="2025-12-09T19:25:36" tests="6" time="8.193" failures="0">
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería listar todos los trabajos (GET /trabajos)" time="1.407" classname="✅ Debería listar todos los trabajos (GET /trabajos)">
+    </testcase>
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería crear un nuevo trabajo (POST /trabajos)" time="0.682" classname="✅ Debería crear un nuevo trabajo (POST /trabajos)">
+    </testcase>
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería obtener un trabajo por ID (GET /trabajos/:id)" time="1.070" classname="✅ Debería obtener un trabajo por ID (GET /trabajos/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería actualizar un trabajo (PUT /trabajos/:id)" time="1.082" classname="✅ Debería actualizar un trabajo (PUT /trabajos/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería eliminar un trabajo (DELETE /trabajos/:id)" time="0.979" classname="✅ Debería eliminar un trabajo (DELETE /trabajos/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Trabajos API ✅ Debería filtrar trabajos por ubicación" time="1.083" classname="✅ Debería filtrar trabajos por ubicación">
+    </testcase>
+  </testsuite>
+</testsuites>

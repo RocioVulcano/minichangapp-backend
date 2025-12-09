@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="9.836" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:36:53" tests="0" file="cypress\e2e\postulaciones.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔗 E2E - Postulaciones API" timestamp="2025-12-09T19:36:53" tests="6" time="9.820" failures="0">
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería listar todas las postulaciones (GET /postulaciones)" time="1.729" classname="✅ Debería listar todas las postulaciones (GET /postulaciones)">
+    </testcase>
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería crear una nueva postulación (POST /postulaciones)" time="0.930" classname="✅ Debería crear una nueva postulación (POST /postulaciones)">
+    </testcase>
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería obtener una postulación por ID (GET /postulaciones/:id)" time="1.097" classname="✅ Debería obtener una postulación por ID (GET /postulaciones/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería actualizar una postulación (PUT /postulaciones/:id)" time="0.915" classname="✅ Debería actualizar una postulación (PUT /postulaciones/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería eliminar una postulación (DELETE /postulaciones/:id)" time="0.983" classname="✅ Debería eliminar una postulación (DELETE /postulaciones/:id)">
+    </testcase>
+    <testcase name="🔗 E2E - Postulaciones API ✅ Debería manejar diferentes ofertas de pago" time="2.386" classname="✅ Debería manejar diferentes ofertas de pago">
+    </testcase>
+  </testsuite>
+</testsuites>

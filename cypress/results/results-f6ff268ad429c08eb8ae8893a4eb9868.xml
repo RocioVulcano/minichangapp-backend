@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="10.050" tests="7" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:36:40" tests="0" file="cypress\e2e\performance.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="⚡ E2E - Performance y Carga" timestamp="2025-12-09T19:36:40" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Tiempos de Respuesta" timestamp="2025-12-09T19:36:40" tests="3" time="2.661" failures="0">
+    <testcase name="⚡ E2E - Performance y Carga Tiempos de Respuesta ✅ GET /usuarios debería responder en menos de 1 segundo" time="0.388" classname="✅ GET /usuarios debería responder en menos de 1 segundo">
+    </testcase>
+    <testcase name="⚡ E2E - Performance y Carga Tiempos de Respuesta ✅ POST /usuarios debería responder en menos de 2 segundos" time="0.556" classname="✅ POST /usuarios debería responder en menos de 2 segundos">
+    </testcase>
+    <testcase name="⚡ E2E - Performance y Carga Tiempos de Respuesta ✅ Múltiples requests deberían completarse en tiempo razonable" time="1.516" classname="✅ Múltiples requests deberían completarse en tiempo razonable">
+    </testcase>
+  </testsuite>
+  <testsuite name="Creación Masiva" timestamp="2025-12-09T19:36:42" tests="1" time="6.362" failures="0">
+    <testcase name="⚡ E2E - Performance y Carga Creación Masiva ✅ Crear 10 usuarios consecutivamente" time="3.235" classname="✅ Crear 10 usuarios consecutivamente">
+    </testcase>
+  </testsuite>
+  <testsuite name="Consultas con Muchos Registros" timestamp="2025-12-09T19:36:49" tests="3" time="1.006" failures="0">
+    <testcase name="⚡ E2E - Performance y Carga Consultas con Muchos Registros ✅ GET /usuarios debería manejar respuestas grandes" time="0.349" classname="✅ GET /usuarios debería manejar respuestas grandes">
+    </testcase>
+    <testcase name="⚡ E2E - Performance y Carga Consultas con Muchos Registros ✅ GET /trabajos debería manejar respuestas grandes" time="0.276" classname="✅ GET /trabajos debería manejar respuestas grandes">
+    </testcase>
+    <testcase name="⚡ E2E - Performance y Carga Consultas con Muchos Registros ✅ GET /postulaciones debería manejar respuestas grandes" time="0.281" classname="✅ GET /postulaciones debería manejar respuestas grandes">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="5.063" tests="14" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-12-09T19:37:42" tests="0" file="cypress\e2e\validaciones.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="🔍 E2E - Validaciones y Casos Edge" timestamp="2025-12-09T19:37:42" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Validaciones de Usuarios" timestamp="2025-12-09T19:37:42" tests="6" time="0.602" failures="0">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin nombre" time="0.082" classname="❌ Debería rechazar usuario sin nombre">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar usuario sin email" time="0.045" classname="❌ Debería rechazar usuario sin email">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar email inválido" time="0.042" classname="❌ Debería rechazar email inválido">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre con números" time="0.047" classname="❌ Debería rechazar nombre con números">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombre muy corto" time="0.043" classname="❌ Debería rechazar nombre muy corto">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Validaciones de Usuarios ❌ Debería rechazar nombres genéricos" time="0.040" classname="❌ Debería rechazar nombres genéricos">
+    </testcase>
+  </testsuite>
+  <testsuite name="Casos Edge - IDs no existentes" timestamp="2025-12-09T19:37:43" tests="5" time="2.181" failures="0">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET usuario inexistente debería retornar 404" time="0.381" classname="❌ GET usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ PUT usuario inexistente debería retornar 404" time="0.479" classname="❌ PUT usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ DELETE usuario inexistente debería retornar 404" time="0.452" classname="❌ DELETE usuario inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET trabajo inexistente debería retornar 404" time="0.356" classname="❌ GET trabajo inexistente debería retornar 404">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Casos Edge - IDs no existentes ❌ GET postulación inexistente debería retornar 404" time="0.292" classname="❌ GET postulación inexistente debería retornar 404">
+    </testcase>
+  </testsuite>
+  <testsuite name="Manejo de Caracteres Especiales" timestamp="2025-12-09T19:37:45" tests="3" time="2.268" failures="1">
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con tildes" time="0.299" classname="✅ Debería manejar nombres con tildes">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar nombres con ñ" time="0.369" classname="✅ Debería manejar nombres con ñ">
+    </testcase>
+    <testcase name="🔍 E2E - Validaciones y Casos Edge Manejo de Caracteres Especiales ✅ Debería manejar descripciones largas en trabajos" time="0.000" classname="✅ Debería manejar descripciones largas en trabajos">
+      <failure message="`cy.request()` failed on:
+
+http://localhost:3000/trabajos
+
+The response we received from your web server was:
+
+  &gt; 400: Bad Request
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:3000/trabajos
+Headers: {
+  &quot;Connection&quot;: &quot;keep-alive&quot;,
+  &quot;user-agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.17.0 Chrome/118.0.5993.159 Electron/27.3.10 Safari/537.36&quot;,
+  &quot;accept&quot;: &quot;*/*&quot;,
+  &quot;accept-encoding&quot;: &quot;gzip, deflate&quot;,
+  &quot;content-type&quot;: &quot;application/json&quot;,
+  &quot;content-length&quot;: 581
+}
+Body: {&quot;titulo&quot;:&quot;Trabajo LARGO&quot;,&quot;descripcion&quot;:&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;,&quot;ubicacion&quot;:&quot;Córdoba&quot;,&quot;usuario_id&quot;:1}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 400 - Bad Request
+Headers: {
+  &quot;x-powered-by&quot;: &quot;Express&quot;,
+  &quot;access-control-allow-origin&quot;: &quot;*&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset=utf-8&quot;,
+  &quot;content-length&quot;: &quot;102&quot;,
+  &quot;etag&quot;: &quot;W/\&quot;66-a9L2GE/iObM+JhgUSaR1Q19yHOE\&quot;&quot;,
+  &quot;date&quot;: &quot;Tue, 09 Dec 2025 19:37:46 GMT&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;keep-alive&quot;: &quot;timeout=5&quot;
+}
+Body: {
+  &quot;error&quot;: &quot;null value in column \&quot;empleador_id\&quot; of relation \&quot;trabajo\&quot; violates not-null constraint&quot;
+}
+
+
+https://on.cypress.io/request" type="CypressError"><![CDATA[CypressError: `cy.request()` failed on:
+
+http://localhost:3000/trabajos
+
+The response we received from your web server was:
+
+  > 400: Bad Request
+
+This was considered a failure because the status code was not `2xx` or `3xx`.
+
+If you do not want status codes to cause failures pass the option: `failOnStatusCode: false`
+
+-----------------------------------------------------------
+
+The request we sent was:
+
+Method: POST
+URL: http://localhost:3000/trabajos
+Headers: {
+  "Connection": "keep-alive",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/13.17.0 Chrome/118.0.5993.159 Electron/27.3.10 Safari/537.36",
+  "accept": "*/*",
+  "accept-encoding": "gzip, deflate",
+  "content-type": "application/json",
+  "content-length": 581
+}
+Body: {"titulo":"Trabajo LARGO","descripcion":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","ubicacion":"Córdoba","usuario_id":1}
+
+-----------------------------------------------------------
+
+The response we got was:
+
+Status: 400 - Bad Request
+Headers: {
+  "x-powered-by": "Express",
+  "access-control-allow-origin": "*",
+  "content-type": "application/json; charset=utf-8",
+  "content-length": "102",
+  "etag": "W/\"66-a9L2GE/iObM+JhgUSaR1Q19yHOE\"",
+  "date": "Tue, 09 Dec 2025 19:37:46 GMT",
+  "connection": "keep-alive",
+  "keep-alive": "timeout=5"
+}
+Body: {
+  "error": "null value in column \"empleador_id\" of relation \"trabajo\" violates not-null constraint"
+}
+
+
+https://on.cypress.io/request
+    at <unknown> (http://localhost:3000/__cypress/runner/cypress_runner.js:132876:72)
+    at tryCatcher (http://localhost:3000/__cypress/runner/cypress_runner.js:1830:23)
+    at Promise._settlePromiseFromHandler (http://localhost:3000/__cypress/runner/cypress_runner.js:1542:31)
+    at Promise._settlePromise (http://localhost:3000/__cypress/runner/cypress_runner.js:1599:18)
+    at Promise._settlePromise0 (http://localhost:3000/__cypress/runner/cypress_runner.js:1644:10)
+    at Promise._settlePromises (http://localhost:3000/__cypress/runner/cypress_runner.js:1724:18)
+    at _drainQueueStep (http://localhost:3000/__cypress/runner/cypress_runner.js:2430:12)
+    at _drainQueue (http://localhost:3000/__cypress/runner/cypress_runner.js:2423:9)
+    at Async._drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2439:5)
+    at Async.drainQueues (http://localhost:3000/__cypress/runner/cypress_runner.js:2309:14)
+From Your Spec Code:
+    at Context.eval (webpack://minichangapp-backend/./cypress/e2e/validaciones.cy.js:202:9)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
