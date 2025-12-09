@@ -106,8 +106,9 @@ stages:
 
     - script: |
         echo "Exportando variables de entorno..."
-        export SUPABASE_URL="$(SUPABASE_URL)"
-        export SUPABASE_KEY="$(SUPABASE_KEY)"
+        export SUPABASE_URL="$SUPABASE_URL"
+        export SUPABASE_KEY="$SUPABASE_KEY"
+
         echo "Variables exportadas"
         
         # Levantar el backend en background
