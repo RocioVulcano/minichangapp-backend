@@ -93,6 +93,7 @@ stages:
     displayName: "Ejecutar Cypress E2E"
     pool:
       vmImage: 'ubuntu-latest'
+
     steps:
 
     - task: NodeTool@0
@@ -103,21 +104,46 @@ stages:
     - script: npm ci
       displayName: "Instalar dependencias"
 
-    # 🔥 LEVANTAR BACKEND EN PUERTO 3000
-    - script: nohup npm start &
-      displayName: "Levantar backend en puerto 3000"
+    - script: |
+        echo "Exportando variables de entorno..."
+        export SUPABASE_URL="$(SUPABASE_URL)"
+        export SUPABASE_KEY="$(SUPABASE_KEY)"
+        echo "Variables exportadas"
+        
+        # Levantar el backend en background
+        nohup npm start &
+        
+        echo "Esperando que el backend responda en http://localhost:3000..."
+        
+        # Esperar hasta que responda
+        for i in {1..20}; do
+          if curl -s http://localhost:3000 > /dev/null; then
+            echo "Backend levantado ✔"
+            break
+          fi
+          echo "Backend no responde aún... reintentando..."
+          sleep 3
+        done
+        
+        # Último intento
+        if ! curl -s http://localhost:3000 > /dev/null; then
+          echo "❌ ERROR: Backend nunca levantó"
+          exit 1
+        fi
+      displayName: "Exportar entorno + Levantar backend"
 
-    # 🔥 EJECUTAR CYPRESS E2E SEGÚN TU PACKAGE.JSON
-    - script: npm run test:e2e
+    - script: |
+        echo "Ejecutando Cypress..."
+        npm run cypress:run
       displayName: "Ejecutar Cypress tests"
 
-    # 📄 PUBLICAR REPORTES (si Cypress genera JUnit)
     - task: PublishTestResults@2
       condition: succeededOrFailed()
       inputs:
         testResultsFormat: JUnit
-        testResultsFiles: "**/cypress/results/*.xml"
+        testResultsFiles: "cypress/results/*.xml"
         failTaskOnFailedTests: false
+
 
 
 # ===========================
