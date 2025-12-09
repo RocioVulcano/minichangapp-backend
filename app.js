@@ -99,10 +99,22 @@ app.post("/usuarios", async (req, res) => {
   const { nombre, email, rol } = req.body;
 
   // VALIDACIONES BÁSICAS
-  if (!nombre || !email || !rol) return res.status(400).json({ error: "Todos los campos son obligatorios." });
-  if (nombre.trim().length < 2) return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres." });
-  if (/\d/.test(nombre)) return res.status(400).json({ error: "El nombre no puede contener números." });
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: "Email inválido." });
+  if (!nombre || !email || !rol) {
+    return res.status(400).json({ error: "Todos los campos son obligatorios." });
+  }
+  if (nombre.trim().length < 2) {
+    return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres." });
+  }
+  if (/\d/.test(nombre)) {
+    return res.status(400).json({ error: "El nombre no puede contener números." });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "El email no tiene un formato válido." });
+  }
+  const genericos = ["usuario", "empleado", "test", "admin", "candidato"];
+  if (genericos.includes(nombre.trim().toLowerCase())) {
+    return res.status(400).json({ error: "El nombre ingresado no es válido." });
+  }
 
   try {
     if (isProd) {

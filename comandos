@@ -1,5 +1,5 @@
-npx jest --coverage --detectOpenHandles --forceExit // test + covergage
+// npx jest --coverage --detectOpenHandles --forceExit // test + covergage
 
- npm run cypress:open // cypress
+// npm run cypress:open // cypress
 
- npm test
+// npm test
