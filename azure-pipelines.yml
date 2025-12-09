@@ -16,6 +16,13 @@ variables:
   webFrontQA: 'changapp-front-qa'
   webFrontPROD: 'changapp-front-prod'
 
+  # URLS REALES DE AZURE
+  qaBackendUrl: 'https://changapp-qa-f2dkejh0dxeshbh4.canadacentral-01.azurewebsites.net'
+  prodBackendUrl: 'https://changapp-prod-atcjfjgnbkhde0g2.canadacentral-01.azurewebsites.net'
+  qaFrontendUrl: 'https://changapp-front-qa-etdpavbhgdbwh2cj.canadacentral-01.azurewebsites.net'
+  prodFrontendUrl: 'https://changapp-front-prod-fefad0hne5ancrd4.canadacentral-01.azurewebsites.net'
+
+
 stages:
 
 # ===========================
@@ -126,15 +133,15 @@ stages:
               appName: $(webFrontQA)
               package: '$(Pipeline.Workspace)/drop/frontend.zip'
 
-
 # ===========================
-#   E2E TESTS (CYPRESS)  ← NUEVO STAGE
+#   E2E TESTS (CYPRESS)
 # ===========================
 - stage: E2E_Tests
-  displayName: 'E2E Tests with Cypress'
+  displayName: 'E2E Tests (Cypress)'
   dependsOn: Deploy_QA
   jobs:
   - job: CypressTests
+    displayName: 'Run Cypress E2E Tests'
     steps:
     - task: NodeTool@0
       inputs:
@@ -144,17 +151,122 @@ stages:
     - script: npm ci
       displayName: 'Instalar dependencias'
 
+    # HEALTH CHECK CON URLs CORRECTAS
     - script: |
-        echo "Esperando que QA esté listo..."
-        sleep 30
-      displayName: 'Esperar deploy QA'
+        echo "🔍 Verificando disponibilidad de QA..."
+        echo "Backend: $(qaBackendUrl)"
+        echo "Frontend: $(qaFrontendUrl)"
+        echo ""
+        
+        # Función para verificar URL
+        check_url() {
+          url=$1
+          name=$2
+          echo "Verificando $name..."
+          
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+          echo "  HTTP Code: $http_code"
+          
+          if [ "$http_code" = "200" ] || [ "$http_code" = "301" ] || [ "$http_code" = "302" ]; then
+            echo "  ✅ $name responde!"
+            return 0
+          else
+            echo "  ❌ $name NO responde (código: $http_code)"
+            return 1
+          fi
+        }
+        
+        # Espera inicial (Azure cold start puede tardar)
+        echo "⏳ Esperando 45 segundos para que Azure inicie las apps..."
+        sleep 45
+        
+        # Verificar Backend
+        echo ""
+        echo "=== VERIFICANDO BACKEND ==="
+        max_attempts=15
+        attempt=0
+        backend_ok=false
+        
+        while [ $attempt -lt $max_attempts ]; do
+          echo "Intento $((attempt+1))/$max_attempts..."
+          
+          if check_url "$(qaBackendUrl)/health" "Backend /health"; then
+            backend_ok=true
+            break
+          fi
+          
+          sleep 4
+          attempt=$((attempt+1))
+        done
+        
+        if [ "$backend_ok" = false ]; then
+          echo "⚠️ Backend /health no responde, probando ruta raíz..."
+          if check_url "$(qaBackendUrl)" "Backend /"; then
+            backend_ok=true
+            echo "✅ Backend responde en ruta raíz"
+          fi
+        fi
+        
+        # Verificar Frontend
+        echo ""
+        echo "=== VERIFICANDO FRONTEND ==="
+        attempt=0
+        frontend_ok=false
+        
+        while [ $attempt -lt $max_attempts ]; do
+          echo "Intento $((attempt+1))/$max_attempts..."
+          
+          if check_url "$(qaFrontendUrl)" "Frontend"; then
+            frontend_ok=true
+            break
+          fi
+          
+          sleep 4
+          attempt=$((attempt+1))
+        done
+        
+        # Resultado final
+        echo ""
+        echo "=== RESULTADO ==="
+        echo "Backend: $backend_ok"
+        echo "Frontend: $frontend_ok"
+        
+        if [ "$frontend_ok" = false ]; then
+          echo ""
+          echo "❌ ERROR: Frontend NO está disponible"
+          echo ""
+          echo "Debug detallado del Frontend:"
+          curl -v "$(qaFrontendUrl)" 2>&1 | head -30
+          echo ""
+          echo "Debug detallado del Backend:"
+          curl -v "$(qaBackendUrl)" 2>&1 | head -30
+          exit 1
+        fi
+        
+        if [ "$backend_ok" = false ]; then
+          echo "⚠️ Backend no responde completamente, pero continuamos (Cypress puede necesitar ajustes)"
+        fi
+        
+        echo ""
+        echo "✅ Frontend está disponible!"
+        echo "Esperando 15 segundos adicionales por seguridad..."
+        sleep 15
+        
+      displayName: 'Health Check QA'
+      continueOnError: false
 
     - script: |
-        echo "Ejecutando tests E2E con Cypress..."
-        npx cypress run --config baseUrl=https://changapp-front-qa.azurewebsites.net
-      displayName: 'Run Cypress E2E Tests'
+        echo "🧪 Ejecutando Cypress E2E Tests..."
+        echo "Base URL: $(qaFrontendUrl)"
+        echo "API URL: $(qaBackendUrl)"
+      displayName: 'Info de test'
+
+    - script: |
+        npm run cypress:ci -- --config baseUrl=$(qaFrontendUrl)
+      displayName: 'Run Cypress Tests'
       env:
-        CYPRESS_BASE_URL: 'https://changapp-front-qa.azurewebsites.net'
+        CYPRESS_BASE_URL: $(qaFrontendUrl)
+        CYPRESS_API_URL: $(qaBackendUrl)
 
     - task: PublishTestResults@2
       displayName: 'Publicar resultados Cypress'
@@ -163,7 +275,14 @@ stages:
         testResultsFormat: 'JUnit'
         testResultsFiles: 'cypress/results/*.xml'
         failTaskOnFailedTests: true
+        testRunTitle: 'Cypress E2E Tests'
 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar screenshots (si falló)'
+      condition: failed()
+      inputs:
+        pathToPublish: 'cypress/screenshots'
+        artifactName: 'cypress-screenshots'
 
 # ===========================
 #     DEPLOY PROD
