@@ -8,12 +8,23 @@ export default {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    '**/*.js',
+    'app.js',  // Solo el archivo principal de tu app
+    'front/**/*.js',  // Si tenés código productivo en front
+    '!front/config.js',  // Excluir config
     '!**/node_modules/**',
     '!**/coverage/**',
+    '!**/__tests__/**',  // IMPORTANTE: excluir los tests
+    '!**/cypress/**',  // IMPORTANTE: excluir cypress
     '!jest.config.js',
     '!jest.setup.js',
-    '!jest.setup.jsdom.js'
+    '!jest.setup.jsdom.js',
+    '!babel.config.js',
+    '!cypress.config.js',
+    '!bd.js',
+    '!diagnostico.js',
+    '!index.js',
+    '!supabaseClient.js',
+    '!supabaseMocks.js'
   ],
   transform: {},
   // Configuración específica para archivos de frontend

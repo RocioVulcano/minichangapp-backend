@@ -4,7 +4,6 @@ import request from "supertest";
 import app from "../../app.js";
 import { createClient } from "@supabase/supabase-js";
 
-// 🧩 1️⃣ Simulamos Supabase
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
@@ -19,7 +18,6 @@ jest.mock("@supabase/supabase-js", () => ({
   })),
 }));
 
-// 🧪 2️⃣ Test GET /usuarios
 describe("GET /usuarios", () => {
   test("debería devolver una lista de usuarios simulada", async () => {
     const response = await request(app).get("/usuarios");
