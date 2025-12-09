@@ -82,6 +82,43 @@ stages:
         npm test -- --coverage --runInBand
       displayName: "Run tests"
 
+# ===========================
+#       STAGE: CYPRESS E2E
+# ===========================
+- stage: E2E_Tests
+  dependsOn: Test
+  displayName: "Pruebas E2E con Cypress"
+  jobs:
+  - job: Cypress
+    displayName: "Ejecutar Cypress E2E"
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(nodeVersion)'
+      displayName: "Usar Node.js"
+
+    - script: npm ci
+      displayName: "Instalar dependencias"
+
+    # 🔥 LEVANTAR BACKEND EN PUERTO 3000
+    - script: nohup npm start &
+      displayName: "Levantar backend en puerto 3000"
+
+    # 🔥 EJECUTAR CYPRESS E2E SEGÚN TU PACKAGE.JSON
+    - script: npm run test:e2e
+      displayName: "Ejecutar Cypress tests"
+
+    # 📄 PUBLICAR REPORTES (si Cypress genera JUnit)
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFormat: JUnit
+        testResultsFiles: "**/cypress/results/*.xml"
+        failTaskOnFailedTests: false
+
 
 # ===========================
 #     DEPLOY QA

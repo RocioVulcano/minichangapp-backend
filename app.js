@@ -2,21 +2,12 @@ import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import pkg from "pg";
-import dotenv from "dotenv";
 
 // ============================================================
-// CARGA DE VARIABLES DE ENTORNO SEGÚN ENTORNO
+// NOTA: dotenv ya fue cargado en index.js
+// NO cargarlo nuevamente aquí
 // ============================================================
-if (process.env.NODE_ENV === "test") {
-  console.log("🔧 Cargando variables desde .env.test");
-  dotenv.config({ path: ".env.test" });
-} else {
-  dotenv.config();
-}
 
-// ============================================================
-// INICIALIZACIÓN GENERAL
-// ============================================================
 const { Pool } = pkg;
 
 const app = express();
@@ -25,6 +16,7 @@ app.use(cors());
 app.use(express.static("public"));
 
 const isProd = process.env.NODE_ENV === "production";
+const isTest = process.env.NODE_ENV === "test";
 
 let db = null;
 let supabase = null;
@@ -41,21 +33,31 @@ if (isProd) {
   });
 
 } else {
-  console.log("🟠 Conectando a SUPABASE (QA/Test)...");
+  console.log("🟠 Conectando a SUPABASE (QA/Development)...");
   console.log("➡ SUPABASE_URL:", process.env.SUPABASE_URL ?? "(VACÍO)");
-  console.log("➡ SUPABASE_KEY:", process.env.SUPABASE_KEY ? "(CARGADA)" : "(VACÍA)");
+  console.log("➡ SUPABASE_KEY:", process.env.SUPABASE_KEY ? "(CONFIGURADA ✅)" : "(VACÍA ❌)");
 
-  supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
-  );
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+    console.error("\n❌ ERROR: Faltan credenciales de Supabase");
+    console.error("➡ Asegúrate de tener un archivo .env con SUPABASE_URL y SUPABASE_KEY");
+    console.error("➡ Ejemplo: SUPABASE_URL=https://tu-proyecto.supabase.co");
+    console.error("➡ Ejemplo: SUPABASE_KEY=tu-clave-anon-key\n");
+    
+    if (!isTest) {
+      process.exit(1);
+    }
+  } else {
+    supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_KEY
+    );
+  }
 }
 
 // ============================================================
-// ===============   RUTAS DE USUARIOS   =======================
+// RUTAS DE USUARIOS
 // ============================================================
 
-// GET usuarios
 app.get("/usuarios", async (req, res) => {
   try {
     if (isProd) {
@@ -73,11 +75,34 @@ app.get("/usuarios", async (req, res) => {
   }
 });
 
-// POST crear usuario
+app.get("/usuarios/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    if (isProd) {
+      const result = await db.query("SELECT * FROM usuario WHERE id_usuario = $1;", [id]);
+      if (!result.rows.length) return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.json(result.rows);
+    }
+
+    const { data, error } = await supabase
+      .from("usuario")
+      .select("*")
+      .eq("id_usuario", id);
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data.length) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json(data);
+
+  } catch (err) {
+    res.status(500).json({ error: "Error interno al obtener usuario" });
+  }
+});
+
 app.post("/usuarios", async (req, res) => {
   const { nombre, email, rol } = req.body;
 
-  // Validaciones
   if (!nombre || !email || !rol) {
     return res.status(400).json({ error: "Todos los campos son obligatorios." });
   }
@@ -121,7 +146,6 @@ app.post("/usuarios", async (req, res) => {
   }
 });
 
-// PUT actualizar usuario
 app.put("/usuarios/:id", async (req, res) => {
   const id = req.params.id;
   const { nombre, email, rol } = req.body;
@@ -157,7 +181,6 @@ app.put("/usuarios/:id", async (req, res) => {
   }
 });
 
-// DELETE eliminar usuario
 app.delete("/usuarios/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -190,10 +213,9 @@ app.delete("/usuarios/:id", async (req, res) => {
 });
 
 // ============================================================
-// ===============   RUTAS DE TRABAJOS   =======================
+// RUTAS DE TRABAJOS
 // ============================================================
 
-// GET trabajos
 app.get("/trabajos", async (req, res) => {
   try {
     if (isProd) {
@@ -237,7 +259,54 @@ app.get("/trabajos", async (req, res) => {
   }
 });
 
-// POST crear trabajo
+app.get("/trabajos/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    if (isProd) {
+      const query = `
+        SELECT 
+          t.id_trabajo,
+          t.titulo,
+          t.descripcion,
+          t.ubicacion,
+          t.fecha_publicado,
+          json_build_object(
+            'id_usuario', u.id_usuario,
+            'nombre', u.nombre,
+            'email', u.email
+          ) AS empleador
+        FROM trabajo t
+        LEFT JOIN usuario u ON u.id_usuario = t.empleador_id
+        WHERE t.id_trabajo = $1;
+      `;
+      const result = await db.query(query, [id]);
+      if (!result.rows.length) return res.status(404).json({ error: "Trabajo no encontrado" });
+      return res.json(result.rows);
+    }
+
+    const { data, error } = await supabase
+      .from("trabajo")
+      .select(`
+        id_trabajo,
+        titulo,
+        descripcion,
+        ubicacion,
+        fecha_publicado,
+        empleador:empleador_id (id_usuario, nombre, email)
+      `)
+      .eq("id_trabajo", id);
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data.length) return res.status(404).json({ error: "Trabajo no encontrado" });
+
+    res.json(data);
+
+  } catch {
+    res.status(500).json({ error: "Error al obtener trabajo" });
+  }
+});
+
 app.post("/trabajos", async (req, res) => {
   const { titulo, descripcion, ubicacion, empleador_id } = req.body;
 
@@ -256,11 +325,53 @@ app.post("/trabajos", async (req, res) => {
   }
 });
 
+app.put("/trabajos/:id", async (req, res) => {
+  const id = req.params.id;
+  const { titulo, descripcion, ubicacion } = req.body;
+
+  try {
+    const updateData = {};
+    if (titulo !== undefined) updateData.titulo = titulo;
+    if (descripcion !== undefined) updateData.descripcion = descripcion;
+    if (ubicacion !== undefined) updateData.ubicacion = ubicacion;
+
+    const { data, error } = await supabase
+      .from("trabajo")
+      .update(updateData)
+      .eq("id_trabajo", id)
+      .select();
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data.length) return res.status(404).json({ error: "Trabajo no encontrado" });
+
+    return res.json(data);
+  } catch {
+    res.status(500).json({ error: "Error actualizando trabajo" });
+  }
+});
+
+app.delete("/trabajos/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const { error } = await supabase
+      .from("trabajo")
+      .delete()
+      .eq("id_trabajo", id);
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ message: "Trabajo eliminado correctamente" });
+
+  } catch {
+    res.status(500).json({ error: "Error eliminando trabajo" });
+  }
+});
+
 // ============================================================
-// ============   RUTAS DE POSTULACIONES   =====================
+// RUTAS DE POSTULACIONES
 // ============================================================
 
-// GET postulaciones
 app.get("/postulaciones", async (req, res) => {
   try {
     const { data, error } = await supabase.from("postulacion").select("*");
@@ -273,7 +384,25 @@ app.get("/postulaciones", async (req, res) => {
   }
 });
 
-// POST crear postulacion
+app.get("/postulaciones/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const { data, error } = await supabase
+      .from("postulacion")
+      .select("*")
+      .eq("id_postulacion", id);
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data.length) return res.status(404).json({ error: "Postulación no encontrada" });
+
+    res.json(data);
+
+  } catch {
+    res.status(500).json({ error: "Error al obtener postulación" });
+  }
+});
+
 app.post("/postulaciones", async (req, res) => {
   const { trabajo_id, usuario_id, mensaje, oferta_pago } = req.body;
 
@@ -292,13 +421,55 @@ app.post("/postulaciones", async (req, res) => {
   }
 });
 
+app.put("/postulaciones/:id", async (req, res) => {
+  const id = req.params.id;
+  const { mensaje, oferta_pago } = req.body;
+
+  try {
+    const updateData = {};
+    if (mensaje !== undefined) updateData.mensaje = mensaje;
+    if (oferta_pago !== undefined) updateData.oferta_pago = oferta_pago;
+
+    const { data, error } = await supabase
+      .from("postulacion")
+      .update(updateData)
+      .eq("id_postulacion", id)
+      .select();
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!data.length) return res.status(404).json({ error: "Postulación no encontrada" });
+
+    return res.json(data);
+  } catch {
+    res.status(500).json({ error: "Error actualizando postulación" });
+  }
+});
+
+app.delete("/postulaciones/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const { error } = await supabase
+      .from("postulacion")
+      .delete()
+      .eq("id_postulacion", id);
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    return res.json({ message: "Postulación eliminada correctamente" });
+
+  } catch {
+    res.status(500).json({ error: "Error eliminando postulación" });
+  }
+});
+
 // ============================================================
 // HOME & HEALTH
 // ============================================================
 app.get("/", (req, res) => {
   res.send(`
     <h1>🚀 MiniChangApp Backend desplegado correctamente</h1>
-    <p>Entorno: ${process.env.NODE_ENV}</p>
+    <p>Entorno: ${process.env.NODE_ENV || 'development'}</p>
   `);
 });
 
