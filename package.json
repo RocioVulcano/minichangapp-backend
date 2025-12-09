@@ -14,8 +14,10 @@
     "test:unit": "cross-env NODE_ENV=test jest __tests__/unit_back __tests__/unit_front --detectOpenHandles --forceExit",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "cypress:ci": "cypress run --config video=false",
     "test:e2e": "start-server-and-test start http://localhost:3000 cypress:run",
     "test:e2e:open": "start-server-and-test start http://localhost:3000 cypress:open",
+    "test:e2e:ci": "cypress run --config video=false",
     "test:all": "npm test && npm run test:e2e",
     "serve:front": "http-server front -p 5500 --silent"
   },

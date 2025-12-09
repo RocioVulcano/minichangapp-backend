@@ -76,11 +76,11 @@ stages:
         versionSpec: '$(nodeVersion)'
 
     - script: |
-        echo "Ejecutando tests ..."
+        echo "Ejecutando tests unitarios..."
         export NODE_ENV=test
         npm ci
         npm test -- --coverage --runInBand
-      displayName: "Run tests"
+      displayName: "Run Unit Tests"
 
 # ===========================
 #     DEPLOY QA
@@ -128,10 +128,48 @@ stages:
 
 
 # ===========================
+#   E2E TESTS (CYPRESS)  ← NUEVO STAGE
+# ===========================
+- stage: E2E_Tests
+  displayName: 'E2E Tests with Cypress'
+  dependsOn: Deploy_QA
+  jobs:
+  - job: CypressTests
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(nodeVersion)'
+      displayName: 'Usar Node.js'
+
+    - script: npm ci
+      displayName: 'Instalar dependencias'
+
+    - script: |
+        echo "Esperando que QA esté listo..."
+        sleep 30
+      displayName: 'Esperar deploy QA'
+
+    - script: |
+        echo "Ejecutando tests E2E con Cypress..."
+        npx cypress run --config baseUrl=https://changapp-front-qa.azurewebsites.net
+      displayName: 'Run Cypress E2E Tests'
+      env:
+        CYPRESS_BASE_URL: 'https://changapp-front-qa.azurewebsites.net'
+
+    - task: PublishTestResults@2
+      displayName: 'Publicar resultados Cypress'
+      condition: always()
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: 'cypress/results/*.xml'
+        failTaskOnFailedTests: true
+
+
+# ===========================
 #     DEPLOY PROD
 # ===========================
 - stage: Deploy_PROD
-  dependsOn: Deploy_QA
+  dependsOn: E2E_Tests  # ← CAMBIO: Ahora depende de E2E
   jobs:
   - deployment: ProdDeploy
     environment: 'PROD'
